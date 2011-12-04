@@ -1,0 +1,20 @@
+lightum v1.0
+(c)2011 Pau Oliva Fora - <pof@eslack.org>
+
+This program implements automatic keyboard brightness on MacBookAir4 by reading
+the light sensor value and adjusting the keyboard brightness accordingly.
+
+Usage:  lightum [-m value] [-p value] [-f]
+        -m 0..255 : maximum brightness value between 1 and 255 (default=255)
+        -p num    : number of seconds between light sensor polls (default=8)
+        -f        : run in foreground (do not daemonize)
+        -v        : verbose mode, useful for debugging with -f
+
+Typical usage is running it as daemon, it will poll the light sensor value
+every 8 seconds by default, you can change this value with -p parameter.
+
+The keyboard brightness will be set to maximum when the sensor reports there is
+no light, you can change the maximum value with -m parameter, this value ranges
+from 1 to 255.
+
+Enjoy! :)
