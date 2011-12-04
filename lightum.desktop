@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/lightum
+Icon=
+Categories=
+Hidden=false
+NoDisplay=true
+Terminal=false
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel
+X-KDE-StartupNotify=false
+Name[en_US]=lightum
+Name=lightum
+Comment[en_US]=Adjust keyboard backlight automatically.
+Comment=Adjust keyboard backlight automatically.
