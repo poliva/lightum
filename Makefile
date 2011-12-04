@@ -16,4 +16,4 @@ uninstall:
 	rm -rf /usr/share/doc/lightum/
 
 clean:
-	rm lightum
+	rm lightum 2>/dev/null || exit 0
