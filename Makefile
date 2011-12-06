@@ -1,8 +1,8 @@
 DESTDIR?=/
 SHELL = /bin/sh
 CC?=gcc -O
-CFLAGS = `pkg-config --cflags dbus-1 dbus-glib-1` -Wall
-LDFLAGS= `pkg-config --libs dbus-1 dbus-glib-1`
+CFLAGS = `pkg-config --cflags dbus-1` -Wall
+LDFLAGS= `pkg-config --libs dbus-1`
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
 
@@ -15,7 +15,7 @@ OBJ=functions.o dbus.o lightum.o
 BIN=lightum
 
 all: ${OBJ}
-	${CC} $(CFLAGS) ${OBJ} $(LDFLAGS) -o ${BIN}
+	$(CC) $(CFLAGS) ${OBJ} $(LDFLAGS) -o ${BIN}
 
 install: all
 	mkdir -p $(bindir)
