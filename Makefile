@@ -2,7 +2,7 @@ DESTDIR?=/
 SHELL = /bin/sh
 CC?=gcc -O
 CFLAGS = `pkg-config --cflags dbus-1` -Wall
-LDFLAGS= `pkg-config --libs dbus-1`
+LDFLAGS= `pkg-config --libs dbus-1` -lX11 -lXext -lXss
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
 

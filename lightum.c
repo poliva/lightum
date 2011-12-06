@@ -29,9 +29,11 @@
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
-	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-f]\n");
+	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-v] [-f]\n");
 	fprintf(stderr, "        -m 1..255 : maximum brightness value between 1 and 255 (default=255)\n");
-	fprintf(stderr, "        -p num    : number of seconds between light sensor polls (default=8)\n");
+	fprintf(stderr, "        -p num    : number of miliseconds between light sensor polls (default=800)\n");
+	fprintf(stderr, "        -i num    : power off keyboard light on session idle seconds (default=10, 0 to disable)\n");
+	fprintf(stderr, "        -s        : power off keyboard light when screen saver is active\n");
 	fprintf(stderr, "        -f        : run in foreground (do not daemonize)\n");
 	fprintf(stderr, "        -v        : verbose mode, useful for debugging with -f\n");
 	exit(1);
@@ -39,11 +41,15 @@ void usage() {
 
 int main(int argc, char *argv[]) {
 
-	int screensaver,c,light,brightness,maxlight=255,foreground=0,prev=-1,polltime=8,verbose=0;
+	int screensaver,queryscreensaver=0,c,light,brightness,maxlight=255,foreground=0,prev=-1,polltime=800,verbose=0,idleoff=10;
+	float idletime=0;
 	pid_t pid;
 
-	while ((c = getopt(argc, argv, "vfm:p:?")) != EOF) {
+	while ((c = getopt(argc, argv, "svfm:p:i:?")) != EOF) {
 		switch(c) {
+			case 's':
+				queryscreensaver=1;
+				break;
 			case 'f':
 				foreground=1;
 				break;
@@ -57,6 +63,10 @@ int main(int argc, char *argv[]) {
 			case 'p':
 				polltime=atoi(optarg);
 				if (polltime < 1 || polltime > 60) usage();
+				break;
+			case 'i':
+				idleoff=atoi(optarg);
+				if (idleoff < 0 || idleoff > 86400) usage();
 				break;
 			default:
 				usage();
@@ -76,14 +86,20 @@ int main(int argc, char *argv[]) {
 	while(1) {
 
 		light=get_light_sensor_value();
-		screensaver=get_screensaver_active();
+		if (idleoff != 0) idletime=get_session_idle_time();
 
-		if (verbose) printf("light_sensor: %d\n",light);
+		if (verbose) printf("light_sensor: %d - idle_time: %f\n",light,idletime);
 
-		if (screensaver)
-			brightness=0;
+		if (queryscreensaver) {
+			screensaver=get_screensaver_active();
+		 	if (screensaver)
+				brightness=0;
+		}
 		else
 			brightness=calculate_keyboard_brightness_value(light, maxlight);
+
+		if ((idleoff != 0) && (idletime > idleoff))
+			brightness=0;
 
 		if (brightness!=prev) {
 			prev=brightness;
@@ -91,7 +107,7 @@ int main(int argc, char *argv[]) {
 			set_keyboard_brightness_value(brightness);
 		}
 
-		sleep(polltime);
+		usleep(polltime*1000);
 	}
 	exit(0);
 }

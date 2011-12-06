@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/extensions/scrnsaver.h>
 
 int get_light_sensor_value() {
 
@@ -67,8 +69,9 @@ float get_session_idle_time() {
 	XScreenSaverInfo info;
 	float seconds;
 
-	display = XOpenDisplay(0);
+	display = XOpenDisplay(NULL);
 	XScreenSaverQueryInfo(display, DefaultRootWindow(display), &info);
 	seconds = (float)info.idle/1000.0f;
+	XCloseDisplay(display);
 	return(seconds);
 }
