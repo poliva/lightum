@@ -60,3 +60,15 @@ int calculate_keyboard_brightness_value(int light, int maxlight) {
 
 	return brightness;
 }
+
+float get_session_idle_time() {
+
+	Display *display;
+	XScreenSaverInfo info;
+	float seconds;
+
+	display = XOpenDisplay(0);
+	XScreenSaverQueryInfo(display, DefaultRootWindow(display), &info);
+	seconds = (float)info.idle/1000.0f;
+	return(seconds);
+}
