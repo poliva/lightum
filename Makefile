@@ -1,7 +1,8 @@
 DESTDIR?=/
 SHELL = /bin/sh
-CC = gcc -O
-CFLAGS = -Wall
+CC?=gcc -O
+CFLAGS = `pkg-config --cflags dbus-1 dbus-glib-1` -Wall
+LDFLAGS= `pkg-config --libs dbus-1 dbus-glib-1`
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
 
@@ -10,10 +11,11 @@ prefix = $(DESTDIR)
 bindir = $(prefix)/usr/bin
 docdir = $(prefix)/usr/share/doc
 
-all: lightum
+OBJ=functions.o dbus.o lightum.o
+BIN=lightum
 
-lightum:
-	$(CC) $(CFLAGS) lightum.c -o lightum
+all: ${OBJ}
+	${CC} $(CFLAGS) ${OBJ} $(LDFLAGS) -o ${BIN}
 
 install: all
 	mkdir -p $(bindir)
@@ -30,4 +32,4 @@ uninstall:
 	rm -rf $(docdir)/lightum/
 
 clean:
-	rm lightum 2>/dev/null || exit 0
+	rm lightum *.o 2>/dev/null || exit 0
