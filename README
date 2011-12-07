@@ -13,4 +13,14 @@ Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
         -f        : run in foreground (do not daemonize)
         -v        : verbose mode, useful for debugging with -f
 
+By default lightum will run in auto mode and will turn off the keyboard
+backlight after 10 seconds when the computer is idle. In auto mode, the keyboard
+backlight value is calculated automatically based on the ambient light sensor.
+
+If you run it in manual mode (-x flag on the command line), it will not query
+the light sensor, instead it will use the brightness value you set manually
+using the function keys (F5/F6).
+
+If you want the keyboard backlight always on use the '-i 0' command line flag.
+
 Enjoy! :)
