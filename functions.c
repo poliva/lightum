@@ -18,6 +18,26 @@
 
 #include "lightum.h"
 
+int get_keyboard_brightness_value() {
+
+	int fd;
+	char buf[5];
+	char *kbd_backlight="/sys/devices/platform/applesmc.768/leds/smc::kbd_backlight/brightness";
+
+	/* read light sensor value */
+	fd = open(kbd_backlight, O_RDONLY);
+	if (fd < 0) {
+		perror (kbd_backlight);
+                fprintf (stderr, "Can't open %s\n",kbd_backlight);
+		exit(1);
+	}
+        read(fd, buf, 3);
+	buf[4]='\0';
+	close(fd);
+
+	return atoi(buf);
+}
+
 int get_light_sensor_value() {
 
 	int fd;
