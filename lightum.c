@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'p':
 				polltime=atoi(optarg);
-				if (polltime < 1 || polltime > 60) usage();
+				if (polltime < 1 || polltime > 100000) usage();
 				break;
 			case 'i':
 				idleoff=atoi(optarg);
