@@ -16,6 +16,8 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/scrnsaver.h>
 
+#include "lightum.h"
+
 int get_light_sensor_value() {
 
 	int fd;
@@ -61,6 +63,31 @@ int calculate_keyboard_brightness_value(int light, int maxlight) {
 	else if (light >= 128) brightness=0;
 
 	return brightness;
+}
+
+void fading(int from, int to) {
+
+	int step;
+
+	if (from > to) {
+		step=from/4;
+		set_keyboard_brightness_value(step*3);
+		usleep(100000);
+		set_keyboard_brightness_value(step*2);
+		usleep(100000);
+		set_keyboard_brightness_value(step);
+		usleep(100000);
+		set_keyboard_brightness_value(to);
+	} else {
+		step=to/4;
+		set_keyboard_brightness_value(step);
+		usleep(100000);
+		set_keyboard_brightness_value(step*2);
+		usleep(100000);
+		set_keyboard_brightness_value(step*3);
+		usleep(100000);
+		set_keyboard_brightness_value(to);
+	}
 }
 
 float get_session_idle_time() {

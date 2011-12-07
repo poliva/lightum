@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "1.1"
+#define VERSION "1.2"
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
@@ -102,9 +102,10 @@ int main(int argc, char *argv[]) {
 			brightness=0;
 
 		if (brightness!=prev) {
-			prev=brightness;
 			if (verbose) printf ("-> set keyboard brightness: %d\n",brightness);
-			set_keyboard_brightness_value(brightness);
+			fading(prev,brightness);
+			//set_keyboard_brightness_value(brightness);
+			prev=brightness;
 		}
 
 		usleep(polltime*1000);
