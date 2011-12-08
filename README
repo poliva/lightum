@@ -5,7 +5,7 @@ This program implements automatic keyboard brightness on MacBookAir4 by reading
 the light sensor value and adjusting the keyboard brightness accordingly.
 
 Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
-        -m 1..255 : maximum brightness value between 1 and 255 (default=255)
+        -m 1..255 : maximum brightness value in auto mode (default=255)
         -p num    : number of miliseconds between light sensor polls (default=800)
         -i num    : power off keyboard light on session idle seconds (default=10, 0 to disable)
         -x        : manual mode (will honor the brightness value set with Fn keys)

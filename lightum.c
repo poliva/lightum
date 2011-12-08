@@ -30,7 +30,7 @@
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
 	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]\n");
-	fprintf(stderr, "        -m 1..255 : maximum brightness value between 1 and 255 (default=255)\n");
+	fprintf(stderr, "        -m 1..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "        -p num    : number of miliseconds between light sensor polls (default=800)\n");
 	fprintf(stderr, "        -i num    : power off keyboard light on session idle seconds (default=10, 0 to disable)\n");
 	fprintf(stderr, "        -x        : manual mode (will honor the brightness value set with Fn keys)\n");
@@ -44,14 +44,17 @@ int main(int argc, char *argv[]) {
 
 	int manualmode=0, c, prev=-1;
 	int screensaver, queryscreensaver=0;
-	int light=0, brightness, maxbrightness=255;
+	int light=0, brightness=255, maxbrightness=255;
 	int foreground=0, polltime=800, verbose=0, idleoff=10;
 	int restore, restoreflag=0;
 	float idletime=0;
 	pid_t pid;
 
-	while ((c = getopt(argc, argv, "xsvfm:p:i:?")) != EOF) {
+	while ((c = getopt(argc, argv, "hxsvfm:p:i:?")) != EOF) {
 		switch(c) {
+			case 'h':
+				usage();
+				break;
 			case 'x':
 				manualmode=1;
 				break;
@@ -91,6 +94,9 @@ int main(int argc, char *argv[]) {
 		umask(0);
 	}
 
+	/* in manual mode, start with current brightness value */
+	if (manualmode) restore=get_keyboard_brightness_value();
+
 	while(1) {
 
 		if (!manualmode) {
@@ -103,15 +109,20 @@ int main(int argc, char *argv[]) {
 			if (verbose) printf("idle_time: %f ",idletime);
 		}
 
-		if (!manualmode) brightness=calculate_keyboard_brightness_value(light, maxbrightness);
-		else {
+		if (!manualmode) {
+			brightness=calculate_keyboard_brightness_value(light, maxbrightness);
+			if (verbose) printf("auto mode ");
+		} else {
+			if (verbose) printf("manual mode ");
 			if (idletime > idleoff) {
 				if (restoreflag==0) {
+					if (verbose) printf("restoreflag ");
 					restore=get_keyboard_brightness_value();
 					restoreflag=1;
 				}
 				brightness=0;
 			} else {
+				printf("brightness restored ");
 				brightness=restore;
 				restoreflag=0;
 			}
@@ -123,6 +134,7 @@ int main(int argc, char *argv[]) {
 
 		if (queryscreensaver) {
 			screensaver=get_screensaver_active();
+			if (verbose) printf("screensaver: %d ",screensaver);
 		 	if (screensaver) brightness=0;
 		}
 
