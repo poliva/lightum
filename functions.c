@@ -90,21 +90,21 @@ void fading(int from, int to) {
 	int step;
 
 	if (from > to) {
-		step=from/4;
-		set_keyboard_brightness_value(step*3);
+		step=(from-to)/4;
+		set_keyboard_brightness_value(from-step);
 		usleep(100000);
-		set_keyboard_brightness_value(step*2);
+		set_keyboard_brightness_value(from-step*2);
 		usleep(100000);
-		set_keyboard_brightness_value(step);
+		set_keyboard_brightness_value(from-step*3);
 		usleep(100000);
 		set_keyboard_brightness_value(to);
 	} else {
-		step=to/4;
-		set_keyboard_brightness_value(step);
+		step=(to-from)/4;
+		set_keyboard_brightness_value(to-step*3);
 		usleep(100000);
-		set_keyboard_brightness_value(step*2);
+		set_keyboard_brightness_value(to-step*2);
 		usleep(100000);
-		set_keyboard_brightness_value(step*3);
+		set_keyboard_brightness_value(to-step);
 		usleep(100000);
 		set_keyboard_brightness_value(to);
 	}
