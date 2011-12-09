@@ -30,13 +30,13 @@
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
 	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]\n");
-	fprintf(stderr, "        -m 1..255 : maximum brightness value in auto mode (default=255)\n");
-	fprintf(stderr, "        -p num    : number of miliseconds between light sensor polls (default=800)\n");
-	fprintf(stderr, "        -i num    : power off keyboard light on session idle seconds (default=10, 0 to disable)\n");
-	fprintf(stderr, "        -x        : manual mode (will honor the brightness value set with Fn keys)\n");
-	fprintf(stderr, "        -s        : power off keyboard light when screen saver is active\n");
-	fprintf(stderr, "        -f        : run in foreground (do not daemonize)\n");
-	fprintf(stderr, "        -v        : verbose mode, useful for debugging with -f\n");
+	fprintf(stderr, "     -m 1..255 : maximum brightness value in auto mode (default=255)\n");
+	fprintf(stderr, "     -p num    : number of miliseconds between light sensor polls (default=800)\n");
+	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
+	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
+	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
+	fprintf(stderr, "     -f        : run in foreground (do not daemonize)\n");
+	fprintf(stderr, "     -v        : verbose mode, useful for debugging with -f\n");
 	exit(1);
 }
 
