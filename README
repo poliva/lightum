@@ -1,26 +1,30 @@
 lightum - MacBook automatic keyboard brightness daemon
 (c)2011 Pau Oliva Fora - pof[at]eslack(.)org
 
-This program implements automatic keyboard brightness on MacBookAir4 by reading
-the light sensor value and adjusting the keyboard brightness accordingly.
+lightum is a daemon to control the keyboard brightness on MacBook laptops.
+
+By default it will run in "auto" mode, this means it will read data from the
+ambient light sensor and automatically illuminate the keyboard in low light.
+It will also turn off the keyboard brightness when the computer is not used for
+10 seconds.
+
+If you choose to run it in "manual" mode, it will not query the ambient light
+sensor, but instead it will use the brightness value you set manually using the
+function keys (F5/F6).
+
+When first launched lightum will create a configuration file in the folder
+~/.config/lightum/lightum.conf, inside the user's home directory with the
+default configuration values. When launched without parameters, lightum will
+read the configuration from this config file, but the configuration values can
+be overwritten via the command line:
 
 Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
-        -m 1..255 : maximum brightness value in auto mode (default=255)
-        -p num    : number of miliseconds between light sensor polls (default=800)
-        -i num    : power off keyboard light on session idle seconds (default=10, 0 to disable)
-        -x        : manual mode (will honor the brightness value set with Fn keys)
-        -s        : power off keyboard light when screen saver is active
-        -f        : run in foreground (do not daemonize)
-        -v        : verbose mode, useful for debugging with -f
-
-By default lightum will run in auto mode and will turn off the keyboard
-backlight after 10 seconds when the computer is idle. In auto mode, the keyboard
-backlight value is calculated automatically based on the ambient light sensor.
-
-If you run it in manual mode (-x flag on the command line), it will not query
-the light sensor, instead it will use the brightness value you set manually
-using the function keys (F5/F6).
-
-If you want the keyboard backlight always on use the '-i 0' command line flag.
+     -m 1..255 : maximum brightness value in auto mode (default=255)
+     -p num    : number of miliseconds between light sensor polls (default=800)
+     -i num    : power off keyboard light on session idle seconds (0 to disable)
+     -x        : manual mode (will honor the brightness value set with Fn keys)
+     -s        : power off keyboard light when screen saver is active
+     -f        : run in foreground (do not daemonize)
+     -v        : verbose mode, useful for debugging with -f
 
 Enjoy! :)
