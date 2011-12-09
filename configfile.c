@@ -91,7 +91,7 @@ int create_config_file(char* file) {
 
 conf_data config_parse() {
 
-	char *file, *p;
+	char *file;
 	char input[MAXLEN], temp[MAXLEN];
 	FILE *fd;
 	size_t len;
@@ -112,8 +112,6 @@ conf_data config_parse() {
 	}
 
 	while ((fgets (input, sizeof (input), fd)) != NULL) {
-
-		if ((p = strchr (input, '\n'))) *p = '\0';
 
 		if ((strncmp ("manualmode=", input, 11)) == 0) {
 			strncpy (temp, input + 11,MAXLEN-1);
