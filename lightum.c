@@ -42,24 +42,35 @@ void usage() {
 
 int main(int argc, char *argv[]) {
 
-	int manualmode=0, c, prev=-1;
-	int screensaver, queryscreensaver=0;
-	int light=0, brightness=255, maxbrightness=255;
-	int foreground=0, polltime=800, verbose=0, idleoff=10;
+	int screensaver, c, prev=-1;
+	int light=0, brightness=255;
+	int foreground=0, verbose=0;
 	int restore, restoreflag=0;
 	float idletime=0;
 	pid_t pid;
+	conf_data conf;
 
+	// set defaults
+	conf.manualmode=0;
+	conf.queryscreensaver=0;
+	conf.maxbrightness=255;
+	conf.polltime=800;
+	conf.idleoff=10;
+
+	// overwrite defaults with config file
+	conf = config_parse();
+
+	// overwrite config file with command line arguments
 	while ((c = getopt(argc, argv, "hxsvfm:p:i:?")) != EOF) {
 		switch(c) {
 			case 'h':
 				usage();
 				break;
 			case 'x':
-				manualmode=1;
+				conf.manualmode=1;
 				break;
 			case 's':
-				queryscreensaver=1;
+				conf.queryscreensaver=1;
 				break;
 			case 'f':
 				foreground=1;
@@ -68,22 +79,32 @@ int main(int argc, char *argv[]) {
 				verbose=1;
 				break;
 			case 'm':
-				maxbrightness=atoi(optarg);
-				if (maxbrightness < 1 || maxbrightness > 255) usage();
+				conf.maxbrightness=atoi(optarg);
 				break;
 			case 'p':
-				polltime=atoi(optarg);
-				if (polltime < 1 || polltime > 100000) usage();
+				conf.polltime=atoi(optarg);
 				break;
 			case 'i':
-				idleoff=atoi(optarg);
-				if (idleoff < 0 || idleoff > 86400) usage();
+				conf.idleoff=atoi(optarg);
 				break;
 			default:
 				usage();
 				break;
 		}
 	}
+
+	if (verbose) printf("manualmode: %d\n",conf.manualmode);
+	if (verbose) printf("queryscreensaver: %d\n",conf.queryscreensaver);
+	if (verbose) printf("maxbrightness: %d\n",conf.maxbrightness);
+	if (verbose) printf("polltime: %d\n",conf.polltime);
+	if (verbose) printf("idleoff: %d\n",conf.idleoff);
+
+	// make sure all config values are correct
+	if (conf.manualmode < 0 || conf.manualmode > 1) usage();
+	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage();
+	if (conf.maxbrightness < 1 || conf.maxbrightness > 255) usage();
+	if (conf.polltime < 1 || conf.polltime > 100000) usage();
+	if (conf.idleoff < 0 || conf.idleoff > 86400) usage();
 
 	if (!foreground) {
 		if ((pid = fork()) < 0) exit(1);
@@ -95,26 +116,26 @@ int main(int argc, char *argv[]) {
 	}
 
 	/* in manual mode, start with current brightness value */
-	if (manualmode) restore=get_keyboard_brightness_value();
+	if (conf.manualmode) restore=get_keyboard_brightness_value();
 
 	while(1) {
 
-		if (!manualmode) {
+		if (!conf.manualmode) {
 			light=get_light_sensor_value();
 			if (verbose) printf("light_sensor: %d ",light);
 		}
 
-		if (idleoff != 0) {
+		if (conf.idleoff != 0) {
 			idletime=get_session_idle_time();
 			if (verbose) printf("idle_time: %f ",idletime);
 		}
 
-		if (!manualmode) {
-			brightness=calculate_keyboard_brightness_value(light, maxbrightness);
+		if (!conf.manualmode) {
+			brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
 			if (verbose) printf("auto mode ");
 		} else {
 			if (verbose) printf("manual mode ");
-			if (idletime > idleoff) {
+			if (idletime > conf.idleoff) {
 				if (restoreflag==0) {
 					if (verbose) printf("restoreflag ");
 					restore=get_keyboard_brightness_value();
@@ -128,11 +149,11 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if ((idleoff != 0) && (idletime > idleoff)) {
+		if ((conf.idleoff != 0) && (idletime > conf.idleoff)) {
 			brightness=0;
 		}
 
-		if (queryscreensaver) {
+		if (conf.queryscreensaver) {
 			screensaver=get_screensaver_active();
 			if (verbose) printf("screensaver: %d ",screensaver);
 		 	if (screensaver) brightness=0;
@@ -146,7 +167,7 @@ int main(int argc, char *argv[]) {
 			prev=brightness;
 		}
 
-		usleep(polltime*1000);
+		usleep(conf.polltime*1000);
 	}
 
 	exit(0);

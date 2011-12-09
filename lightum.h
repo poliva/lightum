@@ -1,3 +1,15 @@
+/* config file */
+typedef struct {
+	int manualmode;
+	int queryscreensaver;
+	int maxbrightness;
+	int polltime;
+	int idleoff;
+} conf_data;
+
+/* configfile.c */
+conf_data config_parse();
+
 /* functions.c */
 int get_keyboard_brightness_value();
 int get_light_sensor_value();

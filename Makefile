@@ -11,7 +11,7 @@ prefix = $(DESTDIR)
 bindir = $(prefix)/usr/bin
 docdir = $(prefix)/usr/share/doc
 
-OBJ=functions.o dbus.o lightum.o
+OBJ=functions.o dbus.o configfile.o lightum.o
 BIN=lightum
 
 all: ${OBJ}
