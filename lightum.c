@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "1.3"
+#define VERSION "1.3.1"
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
