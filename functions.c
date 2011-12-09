@@ -110,15 +110,12 @@ void fading(int from, int to) {
 	}
 }
 
-float get_session_idle_time() {
+float get_session_idle_time(Display *display) {
 
-	Display *display;
 	XScreenSaverInfo info;
 	float seconds;
 
-	display = XOpenDisplay(NULL);
 	XScreenSaverQueryInfo(display, DefaultRootWindow(display), &info);
 	seconds = (float)info.idle/1000.0f;
-	XCloseDisplay(display);
 	return(seconds);
 }

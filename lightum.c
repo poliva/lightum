@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "1.2"
+#define VERSION "1.3"
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
 	float idletime=0;
 	pid_t pid;
 	conf_data conf;
+	Display *display = NULL;
 
 	// set defaults
 	conf.manualmode=0;
@@ -93,11 +94,11 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if (verbose) printf("manualmode: %d\n",conf.manualmode);
-	if (verbose) printf("queryscreensaver: %d\n",conf.queryscreensaver);
-	if (verbose) printf("maxbrightness: %d\n",conf.maxbrightness);
-	if (verbose) printf("polltime: %d\n",conf.polltime);
-	if (verbose) printf("idleoff: %d\n",conf.idleoff);
+	if (verbose) printf("CONFIG:\n\tmanualmode: %d\n",conf.manualmode);
+	if (verbose) printf("\tqueryscreensaver: %d\n",conf.queryscreensaver);
+	if (verbose) printf("\tmaxbrightness: %d\n",conf.maxbrightness);
+	if (verbose) printf("\tpolltime: %d\n",conf.polltime);
+	if (verbose) printf("\tidleoff: %d\n\n",conf.idleoff);
 
 	// make sure all config values are correct
 	if (conf.manualmode < 0 || conf.manualmode > 1) usage();
@@ -106,6 +107,10 @@ int main(int argc, char *argv[]) {
 	if (conf.polltime < 1 || conf.polltime > 100000) usage();
 	if (conf.idleoff < 0 || conf.idleoff > 86400) usage();
 
+	if (conf.manualmode) printf("lightum v%s running in manual mode ", VERSION);
+	else printf("lightum v%s running in auto mode ", VERSION);
+	fflush(stdout);
+
 	if (!foreground) {
 		if ((pid = fork()) < 0) exit(1);
 		else if (pid != 0) exit(0);
@@ -113,10 +118,19 @@ int main(int argc, char *argv[]) {
 		setsid();
 		chdir("/");
 		umask(0);
-	}
+		printf("forked into background\n");
+	} else printf("\n");
 
 	/* in manual mode, start with current brightness value */
 	if (conf.manualmode) restore=get_keyboard_brightness_value();
+
+	if (conf.idleoff != 0) {
+		display = XOpenDisplay(NULL);
+		if (display == NULL) {
+			printf("Failed to open display\n");
+			exit(1);
+		}
+	}
 
 	while(1) {
 
@@ -126,7 +140,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (conf.idleoff != 0) {
-			idletime=get_session_idle_time();
+			idletime=get_session_idle_time(display);
 			if (verbose) printf("idle_time: %f ",idletime);
 		}
 
@@ -170,5 +184,6 @@ int main(int argc, char *argv[]) {
 		usleep(conf.polltime*1000);
 	}
 
+	//if (conf.idleoff != 0) XCloseDisplay(display);
 	exit(0);
 }
