@@ -74,7 +74,7 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   0 = automatically adjust keyboard brightness based on light sensor\n");
 	fprintf(fd, "#   1 = or control keyboard brightness manually using Fn+ F5/F6 keys\n");
 	fprintf(fd, "manualmode=0\n\n");
-	fprintf(fd, "# maximum keyboard brightness value (between 1 and 255)\n");
+	fprintf(fd, "# maximum keyboard brightness value (between 4 and 255)\n");
 	fprintf(fd, "maxbrightness=255\n\n");
 	fprintf(fd, "# poll time in miliseconds (used for light sensor and session idle time)\n");
 	fprintf(fd, "polltime=800\n\n");
