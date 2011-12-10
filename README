@@ -19,12 +19,18 @@ read the configuration from this config file, but the configuration values can
 be overwritten via the command line:
 
 Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
-     -m 1..255 : maximum brightness value in auto mode (default=255)
+     -m 4..255 : maximum brightness value in auto mode (default=255)
      -p num    : number of miliseconds between light sensor polls (default=800)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
      -x        : manual mode (will honor the brightness value set with Fn keys)
      -s        : power off keyboard light when screen saver is active
      -f        : run in foreground (do not daemonize)
      -v        : verbose mode, useful for debugging with -f
+
+Official Ubuntu packages are available in poliva/lightum-mba ppa:
+
+     sudo add-apt-repository ppa:poliva/lightum-mba
+     sudo apt-get update
+     sudo apt-get install lightum
 
 Enjoy! :)
