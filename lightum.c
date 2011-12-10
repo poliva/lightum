@@ -176,6 +176,15 @@ int main(int argc, char *argv[]) {
 		if (verbose) printf("brightness: %d\n",brightness);
 
 		if (brightness!=prev) {
+			if (!conf.manualmode) {
+				restore=get_keyboard_brightness_value();
+				if ((restore != prev) && (restoreflag)) {
+					conf.maxbrightness=restore;
+					if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",restore);
+					brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
+				}
+				restoreflag=1;
+			}
 			if (verbose) printf ("-> set keyboard brightness: %d\n",brightness);
 			fading(prev,brightness);
 			prev=brightness;
