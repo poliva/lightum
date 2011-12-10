@@ -25,12 +25,12 @@
 
 #include "lightum.h"
 
-#define VERSION "1.3.1"
+#define VERSION "1.3.2"
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
 	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]\n");
-	fprintf(stderr, "     -m 1..255 : maximum brightness value in auto mode (default=255)\n");
+	fprintf(stderr, "     -m 4..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "     -p num    : number of miliseconds between light sensor polls (default=800)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
 	// make sure all config values are correct
 	if (conf.manualmode < 0 || conf.manualmode > 1) usage();
 	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage();
-	if (conf.maxbrightness < 1 || conf.maxbrightness > 255) usage();
+	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage();
 	if (conf.polltime < 1 || conf.polltime > 100000) usage();
 	if (conf.idleoff < 0 || conf.idleoff > 86400) usage();
 
@@ -173,22 +173,28 @@ int main(int argc, char *argv[]) {
 		 	if (screensaver) brightness=0;
 		}
 
-		if (verbose) printf("brightness: %d\n",brightness);
+		if (verbose) printf("maxbrightness: %d ",conf.maxbrightness);
+		if (verbose) printf("brightness: %d",brightness);
 
 		if (brightness!=prev) {
 			if (!conf.manualmode) {
 				restore=get_keyboard_brightness_value();
+				if (verbose) printf(" current: %d\n",restore);
 				if ((restore != prev) && (restoreflag)) {
-					conf.maxbrightness=restore;
+					/* make sure maxbrightness is never <4 */
+					if (restore < 4) conf.maxbrightness=4;
+					else conf.maxbrightness=restore;
 					if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",restore);
 					brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
+					prev=restore;
 				}
 				restoreflag=1;
 			}
-			if (verbose) printf ("-> set keyboard brightness: %d\n",brightness);
+			if (verbose) printf ("-> set keyboard brightness: %d -> %d\n",prev,brightness);
 			fading(prev,brightness);
 			prev=brightness;
 		}
+		if (verbose) printf("\n");
 
 		usleep(conf.polltime*1000);
 	}
