@@ -20,6 +20,7 @@ be overwritten via the command line:
 
 Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
      -m 4..255 : maximum brightness value in auto mode (default=255)
+     -n 0..3   : minimum brightness value in auto mode (default=0)
      -p num    : number of miliseconds between light sensor polls (default=800)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
      -x        : manual mode (will honor the brightness value set with Fn keys)
