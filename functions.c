@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/extensions/scrnsaver.h>
+#include <signal.h>
 
 #include "lightum.h"
 
@@ -113,4 +114,17 @@ float get_session_idle_time(Display *display) {
 	XScreenSaverQueryInfo(display, DefaultRootWindow(display), &info);
 	seconds = (float)info.idle/1000.0f;
 	return(seconds);
+}
+
+int signal_handler(int sig) {
+
+	set_keyboard_brightness_value(0);
+	printf("Killed!\n");
+	exit(1);
+}
+
+void signal_installer() {
+
+	signal(SIGINT, (void (*)(int))signal_handler);
+	signal(SIGTERM, (void (*)(int))signal_handler);
 }

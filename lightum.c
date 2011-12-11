@@ -139,6 +139,8 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	signal_installer();
+
 	while(1) {
 
 		if (!conf.manualmode) {
