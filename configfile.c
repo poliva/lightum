@@ -76,6 +76,8 @@ int create_config_file(char* file) {
 	fprintf(fd, "manualmode=0\n\n");
 	fprintf(fd, "# maximum keyboard brightness value (between 4 and 255)\n");
 	fprintf(fd, "maxbrightness=255\n\n");
+	fprintf(fd, "# minimum keyboard brightness value (between 0 and 3)\n");
+	fprintf(fd, "minbrightness=0\n\n");
 	fprintf(fd, "# poll time in miliseconds (used for light sensor and session idle time)\n");
 	fprintf(fd, "polltime=800\n\n");
 	fprintf(fd, "# turn off keyboard brightness if computer unused for X seconds (0 to disable).\n");

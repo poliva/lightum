@@ -4,6 +4,7 @@ typedef struct {
 	int manualmode;
 	int queryscreensaver;
 	int maxbrightness;
+	int minbrightness;
 	int polltime;
 	int idleoff;
 } conf_data;
