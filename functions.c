@@ -127,4 +127,6 @@ void signal_installer() {
 
 	signal(SIGINT, (void (*)(int))signal_handler);
 	signal(SIGTERM, (void (*)(int))signal_handler);
+	signal(SIGHUP, (void (*)(int))signal_handler);
+	signal(SIGQUIT, (void (*)(int))signal_handler);
 }
