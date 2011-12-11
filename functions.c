@@ -74,13 +74,8 @@ int calculate_keyboard_brightness_value(int light, int maxlight) {
 
 	int brightness=0;
 	
-	if (light == 0 ) brightness=maxlight;
-	else if (light < 8 ) brightness=maxlight*0.75;
-	else if (light < 16 ) brightness=maxlight*0.66;
-	else if (light < 32) brightness=maxlight*0.33;
-	else if (light < 64) brightness=maxlight*0.16;
-	else if (light < 128) brightness=maxlight*0.08;
-	else if (light >= 128) brightness=0;
+	if (light == 0) brightness=maxlight;
+	else brightness = (maxlight/2)/light;
 
 	return brightness;
 }
