@@ -136,6 +136,13 @@ conf_data config_parse() {
 			config.maxbrightness = atoi(temp);
 		}
 
+		if ((strncmp ("minbrightness=", input, 14)) == 0) {
+			strncpy (temp, input + 14,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.minbrightness = atoi(temp);
+		}
+
 		if ((strncmp ("polltime=", input, 9)) == 0) {
 			strncpy (temp, input + 9,MAXLEN-1);
 			len=strlen(temp);
