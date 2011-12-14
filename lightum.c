@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
 	int light=0, brightness=255;
 	int foreground=0, verbose=0;
 	int restore, restoreflag=0;
+	int tmp;
 	float idletime=0;
 	pid_t pid;
 	conf_data conf;
@@ -201,6 +202,12 @@ int main(int argc, char *argv[]) {
 			}
 			if (verbose) printf ("-> set keyboard brightness: %d -> %d\n",prev,brightness);
 			fading(prev,brightness);
+			usleep(1500);
+			tmp=get_keyboard_brightness_value();
+			if (tmp!=brightness) {
+				if (verbose) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
+				set_keyboard_brightness_value(brightness);
+			}
 			prev=brightness;
 		}
 		if (verbose) printf("\n");
