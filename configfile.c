@@ -79,9 +79,9 @@ int create_config_file(char* file) {
 	fprintf(fd, "# minimum keyboard brightness value (between 0 and 3)\n");
 	fprintf(fd, "minbrightness=0\n\n");
 	fprintf(fd, "# poll time in miliseconds (used for light sensor and session idle time)\n");
-	fprintf(fd, "polltime=800\n\n");
+	fprintf(fd, "polltime=300\n\n");
 	fprintf(fd, "# turn off keyboard brightness if computer unused for X seconds (0 to disable).\n");
-	fprintf(fd, "idleoff=10\n\n");
+	fprintf(fd, "idleoff=5\n\n");
 	fprintf(fd, "# screensaver\n");
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
 	fprintf(fd, "#   0 = do not monitor screensaver status\n");
