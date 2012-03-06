@@ -32,7 +32,7 @@ void usage() {
 	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]\n");
 	fprintf(stderr, "     -m 4..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "     -n 0..3   : minimum brightness value in auto mode (default=0)\n");
-	fprintf(stderr, "     -p num    : number of miliseconds between light sensor polls (default=300)\n");
+	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
