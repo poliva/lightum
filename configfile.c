@@ -159,5 +159,6 @@ conf_data config_parse() {
 	}
 
 	free(file);
+	fclose(fd);
 	return config;
 }
