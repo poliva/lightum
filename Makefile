@@ -1,7 +1,7 @@
 DESTDIR?=/
 SHELL = /bin/sh
-CC?=gcc -O
-CFLAGS = `pkg-config --cflags dbus-1` -Wall
+CC?=gcc
+CFLAGS = `pkg-config --cflags dbus-1` -Wall -O -g
 LDFLAGS= `pkg-config --libs dbus-1` -lX11 -lXext -lXss
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
@@ -32,4 +32,4 @@ uninstall:
 	rm -rf $(docdir)/lightum/
 
 clean:
-	rm lightum *.o 2>/dev/null || exit 0
+	rm -f lightum *.o
