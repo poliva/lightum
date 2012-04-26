@@ -43,7 +43,7 @@ int get_keyboard_brightness_value() {
 int get_light_sensor_value() {
 
 	int fd;
-	int i,n=0;
+	size_t i,n=0;
 	char buf[10];
 	char a_light[10];
 	char *light_sensor="/sys/devices/platform/applesmc.768/light";
@@ -120,6 +120,7 @@ float get_session_idle_time(Display *display) {
 
 int signal_handler(int sig) {
 
+	(void) sig;
 	set_keyboard_brightness_value(0);
 	printf("Killed!\n");
 	exit(1);
