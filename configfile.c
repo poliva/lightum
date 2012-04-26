@@ -158,5 +158,6 @@ conf_data config_parse() {
 		}
 	}
 
+	free(file);
 	return config;
 }
