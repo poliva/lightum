@@ -158,5 +158,6 @@ conf_data config_parse() {
 		}
 	}
 
+	fclose(fd);
 	return config;
 }
