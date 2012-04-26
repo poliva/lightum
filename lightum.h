@@ -24,3 +24,5 @@ void signal_installer();
 /* dbus.c */
 int get_screensaver_active();
 int set_keyboard_brightness_value(int brightness);
+int get_screen_backlight_value();
+int set_screen_backlight_value(int backlight);
