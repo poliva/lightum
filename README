@@ -6,7 +6,7 @@ lightum is a daemon to control the keyboard brightness on MacBook laptops.
 By default it will run in "auto" mode, this means it will read data from the
 ambient light sensor and automatically illuminate the keyboard in low light.
 It will also turn off the keyboard brightness when the computer is not used for
-10 seconds.
+5 seconds.
 
 If you choose to run it in "manual" mode, it will not query the ambient light
 sensor, but instead it will use the brightness value you set manually using the
