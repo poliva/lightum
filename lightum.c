@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
 	int light=0, brightness=255;
 	int foreground=0, verbose=0;
 	int restore, restoreflag=0;
+	int res;
 	int tmp;
 	float idletime=0;
 	pid_t pid;
@@ -124,7 +125,11 @@ int main(int argc, char *argv[]) {
 		else if (pid != 0) exit(0);
 		/* daemon running here */
 		setsid();
-		chdir("/");
+		res=chdir("/");
+		if (res != 0) {
+			perror("Could not chdir");
+			exit(1);
+		}
 		umask(0);
 		printf("forked into background\n");
 	} else printf("\n");
