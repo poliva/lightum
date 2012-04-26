@@ -118,7 +118,7 @@ float get_session_idle_time(Display *display) {
 	return(seconds);
 }
 
-int signal_handler(int sig) {
+void signal_handler(int sig) {
 
 	set_keyboard_brightness_value(0);
 	printf("Killed!\n");
@@ -127,10 +127,10 @@ int signal_handler(int sig) {
 
 void signal_installer() {
 
-	signal(SIGINT, (void (*)(int))signal_handler);
-	signal(SIGTERM, (void (*)(int))signal_handler);
-	signal(SIGHUP, (void (*)(int))signal_handler);
-	signal(SIGQUIT, (void (*)(int))signal_handler);
-	signal(SIGCHLD, (void (*)(int))signal_handler);
-	signal(SIGABRT, (void (*)(int))signal_handler);
+	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
+	signal(SIGHUP, signal_handler);
+	signal(SIGQUIT, signal_handler);
+	signal(SIGCHLD, signal_handler);
+	signal(SIGABRT, signal_handler);
 }
