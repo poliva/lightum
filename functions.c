@@ -24,6 +24,7 @@ int get_keyboard_brightness_value() {
 	int fd;
 	char buf[5];
 	char *kbd_backlight="/sys/devices/platform/applesmc.768/leds/smc::kbd_backlight/brightness";
+	ssize_t cnt;
 
 	/* read light sensor value */
 	fd = open(kbd_backlight, O_RDONLY);
@@ -32,8 +33,8 @@ int get_keyboard_brightness_value() {
                 fprintf (stderr, "Can't open %s\n",kbd_backlight);
 		exit(1);
 	}
-        read(fd, buf, 3);
-	buf[4]='\0';
+	cnt=read(fd, buf, sizeof(buf)-1);
+	buf[cnt]='\0';
 	close(fd);
 
 	return atoi(buf);
@@ -46,6 +47,7 @@ int get_light_sensor_value() {
 	char buf[10];
 	char a_light[10];
 	char *light_sensor="/sys/devices/platform/applesmc.768/light";
+	ssize_t cnt;
 
 	/* read light sensor value */
 	fd = open(light_sensor, O_RDONLY);
@@ -54,12 +56,12 @@ int get_light_sensor_value() {
                 fprintf (stderr, "Can't open %s\n",light_sensor);
 		exit(1);
 	}
-        read(fd, buf, 9);
-	buf[9]='\0';
+	cnt=read(fd, buf, sizeof(buf)-1);
+	buf[cnt]='\0';
 	close(fd);
 
 	/* convert light sensor string value to integer */
-	for (i=0;i<sizeof(buf);i++) {
+	for (i=0;buf[i]!='\0';i++) {
 		if (buf[i]==',') break;
 		if (buf[i]!='(') {
 			a_light[n]=buf[i];
