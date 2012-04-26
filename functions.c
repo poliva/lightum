@@ -83,6 +83,22 @@ int calculate_keyboard_brightness_value(int light, int maxlight) {
 	return brightness;
 }
 
+int calculate_screen_backlight_value(int light, int maxlight) {
+
+	int backlight=0;
+	
+	if (light == 0 ) backlight=maxlight;
+	else if (light < 4 ) backlight=maxlight*0.90;
+	else if (light < 8 ) backlight=maxlight*0.80;
+	else if (light < 16 ) backlight=maxlight*0.75;
+	else if (light < 32) backlight=maxlight*0.60;
+	else if (light < 64) backlight=maxlight*0.50;
+	else if (light < 128) backlight=maxlight*0.40;
+	else if (light >= 128) backlight=maxlight*0.30;
+
+	return backlight;
+}
+
 void fading(int from, int to) {
 
 	int step;
@@ -107,6 +123,32 @@ void fading(int from, int to) {
 		set_keyboard_brightness_value(to);
 	}
 }
+
+void backlight_fading(int from, int to) {
+
+	int step;
+
+	if (from > to) {
+		step=(from-to)/4;
+		set_screen_backlight_value(from-step);
+		usleep(100000);
+		set_screen_backlight_value(from-step*2);
+		usleep(100000);
+		set_screen_backlight_value(from-step*3);
+		usleep(100000);
+		set_screen_backlight_value(to);
+	} else {
+		step=(to-from)/4;
+		set_screen_backlight_value(to-step*3);
+		usleep(20000);
+		set_screen_backlight_value(to-step*2);
+		usleep(20000);
+		set_screen_backlight_value(to-step);
+		usleep(20000);
+		set_screen_backlight_value(to);
+	}
+}
+
 
 float get_session_idle_time(Display *display) {
 

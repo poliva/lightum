@@ -91,6 +91,12 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
 	fprintf(fd, "#   0 = do not monitor screensaver status\n");
 	fprintf(fd, "queryscreensaver=0\n\n");
+	fprintf(fd, "# maximum screen backlight value (between 50 and 100)\n");
+	fprintf(fd, "maxbacklight=100\n\n");
+	fprintf(fd, "# minimum screen backlight value (between 0 and 49)\n");
+	fprintf(fd, "minbacklight=10\n\n");
+	fprintf(fd, "# turn off screen backlight if computer unused for X seconds (0 to disable)\n");
+	fprintf(fd, "screenidle=5\n\n");
 	fclose(fd);
 
 	return TRUE;
@@ -167,6 +173,27 @@ conf_data config_parse() {
 			len=strlen(temp);
 			temp[len+1]='\0';
 			config.idleoff = atoi(temp);
+		}
+
+		if ((strncmp ("maxbacklight=", input, 13)) == 0) {
+			strncpy (temp, input + 13,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.maxbacklight = atoi(temp);
+		}
+
+		if ((strncmp ("minbacklight=", input, 13)) == 0) {
+			strncpy (temp, input + 13,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.minbacklight = atoi(temp);
+		}
+
+		if ((strncmp ("screenidle=", input, 11)) == 0) {
+			strncpy (temp, input + 11,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.screenidle = atoi(temp);
 		}
 	}
 
