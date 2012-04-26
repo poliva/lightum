@@ -29,7 +29,7 @@
 
 void usage() {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
-	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]\n");
+	fprintf(stderr, "Usage:  lightum [-m value] [-p value] [-i value] [-x] [-u] [-s] [-f] [-v]\n");
 	fprintf(stderr, "     -m 4..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "     -n 0..3   : minimum brightness value in auto mode (default=0)\n");
 	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");

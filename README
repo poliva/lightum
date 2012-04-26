@@ -18,12 +18,13 @@ default configuration values. When launched without parameters, lightum will
 read the configuration from this config file, but the configuration values can
 be overwritten via the command line:
 
-Usage:  lightum [-m value] [-p value] [-i value] [-x] [-s] [-f] [-v]
+Usage:  lightum [-m value] [-p value] [-i value] [-x] [-u] [-s] [-f] [-v]
      -m 4..255 : maximum brightness value in auto mode (default=255)
      -n 0..3   : minimum brightness value in auto mode (default=0)
      -p num    : number of milliseconds between light sensor polls (default=300)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
      -x        : manual mode (will honor the brightness value set with Fn keys)
+     -u        : do not ignore brightness changes happening outside lightum
      -s        : power off keyboard light when screen saver is active
      -f        : run in foreground (do not daemonize)
      -v        : verbose mode, useful for debugging with -f
