@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
 				}
 				brightness=conf.minbrightness;
 			} else {
-				printf("brightness restored ");
+				if (verbose) printf("brightness restored ");
 				brightness=restore;
 				restoreflag=0;
 			}
