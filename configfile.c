@@ -74,13 +74,18 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   0 = automatically adjust keyboard brightness based on light sensor\n");
 	fprintf(fd, "#   1 = or control keyboard brightness manually using Fn+ F5/F6 keys\n");
 	fprintf(fd, "manualmode=0\n\n");
+	fprintf(fd, "# ignoreuser: only has effect in auto-mode (when manualmode=0)\n");
+	fprintf(fd, "#   0 = change maxbrightness value dinamically when user presses Fn+ F5/F6\n");
+	fprintf(fd, "#   1 = ignore brightness changess happening outside lightum and keep the\n");
+	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
+	fprintf(fd, "ignoreuser=1\n\n");
 	fprintf(fd, "# maximum keyboard brightness value (between 4 and 255)\n");
 	fprintf(fd, "maxbrightness=255\n\n");
 	fprintf(fd, "# minimum keyboard brightness value (between 0 and 3)\n");
 	fprintf(fd, "minbrightness=0\n\n");
 	fprintf(fd, "# poll time in milliseconds (used for light sensor and session idle time)\n");
 	fprintf(fd, "polltime=300\n\n");
-	fprintf(fd, "# turn off keyboard brightness if computer unused for X seconds (0 to disable).\n");
+	fprintf(fd, "# turn off keyboard brightness if computer unused for X seconds (0 to disable)\n");
 	fprintf(fd, "idleoff=5\n\n");
 	fprintf(fd, "# screensaver\n");
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
@@ -120,6 +125,13 @@ conf_data config_parse() {
 			len=strlen(temp);
 			temp[len+1]='\0';
 			config.manualmode = atoi(temp);
+		}
+
+		if ((strncmp ("ignoreuser=", input, 11)) == 0) {
+			strncpy (temp, input + 11,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.ignoreuser = atoi(temp);
 		}
 
 		if ((strncmp ("queryscreensaver=", input, 17)) == 0) {

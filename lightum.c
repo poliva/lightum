@@ -35,6 +35,7 @@ void usage() {
 	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
+	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
 	fprintf(stderr, "     -f        : run in foreground (do not daemonize)\n");
 	fprintf(stderr, "     -v        : verbose mode, useful for debugging with -f\n");
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
 
 	// set defaults
 	conf.manualmode=0;
+	conf.ignoreuser=1;
 	conf.queryscreensaver=0;
 	conf.maxbrightness=255;
 	conf.minbrightness=0;
@@ -66,13 +68,16 @@ int main(int argc, char *argv[]) {
 	conf = config_parse();
 
 	// overwrite config file with command line arguments
-	while ((c = getopt(argc, argv, "hxsvfm:n:p:i:?")) != EOF) {
+	while ((c = getopt(argc, argv, "hxusvfm:n:p:i:?")) != EOF) {
 		switch(c) {
 			case 'h':
 				usage();
 				break;
 			case 'x':
 				conf.manualmode=1;
+				break;
+			case 'u':
+				conf.ignoreuser=0;
 				break;
 			case 's':
 				conf.queryscreensaver=1;
@@ -102,6 +107,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (verbose) printf("CONFIG:\n\tmanualmode: %d\n",conf.manualmode);
+	if (verbose) printf("\tignoreuser: %d\n",conf.ignoreuser);
 	if (verbose) printf("\tqueryscreensaver: %d\n",conf.queryscreensaver);
 	if (verbose) printf("\tmaxbrightness: %d\n",conf.maxbrightness);
 	if (verbose) printf("\tminbrightness: %d\n",conf.minbrightness);
@@ -110,6 +116,7 @@ int main(int argc, char *argv[]) {
 
 	// make sure all config values are correct
 	if (conf.manualmode < 0 || conf.manualmode > 1) usage();
+	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage();
 	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage();
 	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage();
 	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage();
@@ -196,12 +203,16 @@ int main(int argc, char *argv[]) {
 				restore=get_keyboard_brightness_value();
 				if (verbose) printf(" current: %d\n",restore);
 				if ((restore != prev) && (restoreflag)) {
-					/* make sure maxbrightness is never <4 */
-					if (restore < 4) conf.maxbrightness=4;
-					else conf.maxbrightness=restore;
-					if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",restore);
+					if (!conf.ignoreuser) {
+						/* make sure maxbrightness is never <4 */
+						if (restore < 4) conf.maxbrightness=4;
+						else conf.maxbrightness=restore;
+						if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",restore);
+						prev=restore;
+					} else {
+						if (verbose) printf("-> Ignoring user brightness change, wants to set maxbrightness to %d\n",restore);
+					}
 					brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
-					prev=restore;
 				}
 				restoreflag=1;
 			}

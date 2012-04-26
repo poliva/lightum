@@ -7,6 +7,7 @@ typedef struct {
 	int minbrightness;
 	int polltime;
 	int idleoff;
+	int ignoreuser;
 } conf_data;
 
 /* configfile.c */
