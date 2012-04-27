@@ -113,6 +113,7 @@ int set_screen_backlight_value(int backlight) {
 	else if (backlight == 2) value=17;
 	else if (backlight == 1) value=10;
 	else if (backlight == 0) value=0;
+	//printf("\n SET_BACKLIGHT: %d\n", backlight);
 	ret = dbus_set_screen_backlight_value(value);
 	return ret;
 }
@@ -130,15 +131,15 @@ int calculate_keyboard_brightness_value(int light, int maxlight) {
 int calculate_screen_backlight_value(int light, int maxlight) {
 
 	int backlight=0;
-	
-	if (light == 0 ) backlight=maxlight;
-	else if (light < 4 ) backlight=maxlight*0.90;
-	else if (light < 8 ) backlight=maxlight*0.80;
-	else if (light < 16 ) backlight=maxlight*0.75;
-	else if (light < 32) backlight=maxlight*0.60;
-	else if (light < 64) backlight=maxlight*0.50;
-	else if (light < 128) backlight=maxlight*0.40;
-	else if (light >= 128) backlight=maxlight*0.30;
+
+	if (light == 0) backlight=maxlight*0.10;
+	else if (light < 4) backlight=maxlight*0.20;
+	else if (light < 8) backlight=maxlight*0.30;
+	else if (light < 16) backlight=maxlight*0.40;
+	else if (light < 32) backlight=maxlight*0.50;
+	else if (light < 64) backlight=maxlight*0.75;
+	else if (light < 128) backlight=maxlight*0.90;
+	else if (light >= 128) backlight=maxlight;
 
 	return backlight;
 }
