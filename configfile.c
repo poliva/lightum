@@ -24,6 +24,19 @@
 
 #define MAXLEN 80
 
+static const conf_data default_config = {
+	/* manualmode */ 0,
+	/* queryscreensaver */ 0,
+	/* maxbrightness */ 255,
+	/* minbrightness */ 0,
+	/* polltime */ 300,
+	/* idleoff */ 5,
+	/* ignoreuser */ 1,
+	/* minbacklight */ 15,
+	/* maxbacklight */ 1,
+	/* screenidle */ 5,
+};
+
 int file_exists(char* file) {
 	struct stat buf;
 	if (stat(file, &buf) == 0)
@@ -73,30 +86,30 @@ int create_config_file(char* file) {
 	fprintf(fd, "# manualmode\n");
 	fprintf(fd, "#   0 = automatically adjust keyboard brightness based on light sensor\n");
 	fprintf(fd, "#   1 = or control keyboard brightness manually using Fn+ F5/F6 keys\n");
-	fprintf(fd, "manualmode=0\n\n");
+	fprintf(fd, "manualmode=%d\n\n", default_config.manualmode);
 	fprintf(fd, "# ignoreuser: only has effect in auto-mode (when manualmode=0)\n");
 	fprintf(fd, "#   0 = change maxbrightness value dinamically when user presses Fn+ F5/F6\n");
 	fprintf(fd, "#   1 = ignore brightness changess happening outside lightum and keep the\n");
 	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
-	fprintf(fd, "ignoreuser=1\n\n");
+	fprintf(fd, "ignoreuser=%d\n\n", default_config.ignoreuser);
 	fprintf(fd, "# maximum keyboard brightness value (between 4 and 255)\n");
-	fprintf(fd, "maxbrightness=255\n\n");
+	fprintf(fd, "maxbrightness=%d\n\n", default_config.maxbrightness);
 	fprintf(fd, "# minimum keyboard brightness value (between 0 and 3)\n");
-	fprintf(fd, "minbrightness=0\n\n");
+	fprintf(fd, "minbrightness=%d\n\n", default_config.minbrightness);
 	fprintf(fd, "# poll time in milliseconds (used for light sensor and session idle time)\n");
-	fprintf(fd, "polltime=300\n\n");
+	fprintf(fd, "polltime=%d\n\n", default_config.polltime);
 	fprintf(fd, "# turn off keyboard brightness if computer unused for X seconds (0 to disable)\n");
-	fprintf(fd, "idleoff=5\n\n");
+	fprintf(fd, "idleoff=%d\n\n", default_config.idleoff);
 	fprintf(fd, "# screensaver\n");
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
 	fprintf(fd, "#   0 = do not monitor screensaver status\n");
-	fprintf(fd, "queryscreensaver=0\n\n");
+	fprintf(fd, "queryscreensaver=%d\n\n", default_config.queryscreensaver);
 	fprintf(fd, "# maximum screen backlight value (between 4 and 15)\n");
-	fprintf(fd, "maxbacklight=15\n\n");
+	fprintf(fd, "maxbacklight=%d\n\n", default_config.maxbacklight);
 	fprintf(fd, "# minimum screen backlight value (between 0 and 3)\n");
-	fprintf(fd, "minbacklight=1\n\n");
+	fprintf(fd, "minbacklight=%d\n\n", default_config.minbacklight);
 	fprintf(fd, "# turn off screen backlight if computer unused for X seconds (0 to disable)\n");
-	fprintf(fd, "screenidle=5\n\n");
+	fprintf(fd, "screenidle=%d\n\n", default_config.screenidle);
 	fclose(fd);
 
 	return TRUE;
@@ -108,7 +121,7 @@ conf_data config_parse() {
 	char input[MAXLEN], temp[MAXLEN];
 	FILE *fd;
 	size_t len;
-	conf_data config;
+	conf_data config = default_config;
 
 	file = default_config_file();
 	if (!file_exists(file)) {
