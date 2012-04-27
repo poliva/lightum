@@ -144,6 +144,9 @@ int main(int argc, char *argv[]) {
 	if (conf.workmode < 1 || conf.workmode > 3) usage("ERROR: Wrong value in config variable 'workmode'\n");
 	if (debug < 0 || debug > 3) usage("ERROR: Wrong value in config variable 'debug'\n");
 
+	// if debug enabled, force verbose mode too
+	if (debug > 0) verbose=1;
+
 	if (conf.manualmode) printf("lightum v%s running in manual mode ", VERSION);
 	else printf("lightum v%s running in auto mode ", VERSION);
 	fflush(stdout);
