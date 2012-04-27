@@ -59,18 +59,6 @@ int main(int argc, char *argv[]) {
 	conf_data conf;
 	Display *display = NULL;
 
-	// set defaults
-	conf.manualmode=0;
-	conf.ignoreuser=1;
-	conf.queryscreensaver=0;
-	conf.maxbrightness=255;
-	conf.minbrightness=0;
-	conf.maxbacklight=15;
-	conf.minbacklight=1;
-	conf.polltime=300;
-	conf.idleoff=5;
-	conf.screenidle=5;
-
 	// overwrite defaults with config file
 	conf = config_parse();
 
