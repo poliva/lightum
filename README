@@ -23,16 +23,21 @@ default configuration values. When launched without parameters, lightum will
 read the configuration from this config file, but the configuration values can
 be overwritten via the command line:
 
-Usage:  lightum [-m value] [-p value] [-i value] [-x] [-u] [-s] [-f] [-v]
+Usage:  lightum [OPTION]...
      -m 4..255 : maximum brightness value in auto mode (default=255)
      -n 0..3   : minimum brightness value in auto mode (default=0)
+     -M 4..15  : maximum backlight value in auto mode (default=15)
+     -N 1..3   : minimum backlight value in auto mode (default=1)
      -p num    : number of milliseconds between light sensor polls (default=300)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
+     -I num    : power off screen backlight on session idle seconds (0 to disable)
+     -w num    : 1 manage brightness, 2 manage backlight, 3 both (default:3)
      -x        : manual mode (will honor the brightness value set with Fn keys)
      -u        : do not ignore brightness changes happening outside lightum
      -s        : power off keyboard light when screen saver is active
      -f        : run in foreground (do not daemonize)
-     -v        : verbose mode, useful for debugging with -f
+     -v        : verbose mode, useful for debugging with -f and -d
+     -d num    : debug mode: 1 brightness, 2 backlight, 3 both
 
 
 Official Ubuntu packages are available in poliva/lightum-mba ppa:
