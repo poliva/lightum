@@ -33,8 +33,8 @@ void usage(const char *error) {
 	fprintf(stderr, "Usage:  lightum [OPTION]...\n");
 	fprintf(stderr, "     -m 4..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "     -n 0..3   : minimum brightness value in auto mode (default=0)\n");
-	fprintf(stderr, "     -M 4..15  : maximum backlight value in auto mode (default=100)\n");
-	fprintf(stderr, "     -N 0..3   : minimum backlight value in auto mode (default=10)\n");
+	fprintf(stderr, "     -M 4..15  : maximum backlight value in auto mode (default=15)\n");
+	fprintf(stderr, "     -N 1..3   : minimum backlight value in auto mode (default=1)\n");
 	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -I num    : power off screen backlight on session idle seconds (0 to disable)\n");
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
 	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage("ERROR: Wrong value in config variable 'maxbrightness'\n");
 	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage("ERROR: Wrong value in config variable 'minbrightness'\n");
 	if (conf.maxbacklight < 4 || conf.maxbacklight > 15) usage("ERROR: Wrong value in config variable 'maxbacklight'\n");
-	if (conf.minbacklight < 0 || conf.minbacklight > 3) usage("ERROR: Wrong value in config variable 'minbacklight'\n");
+	if (conf.minbacklight < 1 || conf.minbacklight > 3) usage("ERROR: Wrong value in config variable 'minbacklight'\n");
 	if (conf.polltime < 1 || conf.polltime > 100000) usage("ERROR: Wrong value in config variable 'polltime'\n");
 	if (conf.idleoff < 0 || conf.idleoff > 86400) usage("ERROR: Wrong value in config variable 'idleoff'\n");
 	if (conf.screenidle < 0 || conf.screenidle > 86400) usage("ERROR: Wrong value in config variable 'screenidle'\n");
