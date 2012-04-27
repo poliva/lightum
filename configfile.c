@@ -32,8 +32,8 @@ static const conf_data default_config = {
 	/* polltime */ 300,
 	/* idleoff */ 5,
 	/* ignoreuser */ 1,
-	/* minbacklight */ 15,
-	/* maxbacklight */ 1,
+	/* minbacklight */ 1,
+	/* maxbacklight */ 15,
 	/* screenidle */ 5,
 };
 
