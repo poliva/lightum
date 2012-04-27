@@ -1,5 +1,5 @@
 /*
- *   MacBook automatic keyboard brightness daemon
+ *   MacBook automatic light sensor daemon
  *   Copyright 2011 Pau Oliva Fora <pof@eslack.org>
  *
  *   This program is free software; you can redistribute it and/or
