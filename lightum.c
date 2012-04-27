@@ -38,6 +38,7 @@ void usage(const char *error) {
 	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -I num    : power off screen backlight on session idle seconds (0 to disable)\n");
+	fprintf(stderr, "     -w num    : 1 manage brightness, 2 manage backlight, 3 both (default:3)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
 	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
@@ -64,7 +65,7 @@ int main(int argc, char *argv[]) {
 	conf = config_parse();
 
 	// overwrite config file with command line arguments
-	while ((c = getopt(argc, argv, "hxusvfm:n:M:N:p:I:i:d:?")) != EOF) {
+	while ((c = getopt(argc, argv, "hxusvfm:n:M:N:p:I:i:d:w:?")) != EOF) {
 		switch(c) {
 			case 'h':
 				usage("");
@@ -108,6 +109,9 @@ int main(int argc, char *argv[]) {
 			case 'I':
 				conf.screenidle=atoi(optarg);
 				break;
+			case 'w':
+				conf.workmode=atoi(optarg);
+				break;
 			default:
 				usage("ERROR: Unknown OPTION\n");
 				break;
@@ -116,6 +120,7 @@ int main(int argc, char *argv[]) {
 
 	if (verbose) printf("CONFIG:\n\tmanualmode: %d\n",conf.manualmode);
 	if (verbose) printf("\tignoreuser: %d\n",conf.ignoreuser);
+	if (verbose) printf("\tworkmode: %d\n",conf.workmode);
 	if (verbose) printf("\tqueryscreensaver: %d\n",conf.queryscreensaver);
 	if (verbose) printf("\tmaxbrightness: %d\n",conf.maxbrightness);
 	if (verbose) printf("\tminbrightness: %d\n",conf.minbrightness);
@@ -136,6 +141,7 @@ int main(int argc, char *argv[]) {
 	if (conf.polltime < 1 || conf.polltime > 100000) usage("ERROR: Wrong value in config variable 'polltime'\n");
 	if (conf.idleoff < 0 || conf.idleoff > 86400) usage("ERROR: Wrong value in config variable 'idleoff'\n");
 	if (conf.screenidle < 0 || conf.screenidle > 86400) usage("ERROR: Wrong value in config variable 'screenidle'\n");
+	if (conf.workmode < 1 || conf.workmode > 3) usage("ERROR: Wrong value in config variable 'workmode'\n");
 	if (debug < 0 || debug > 3) usage("ERROR: Wrong value in config variable 'debug'\n");
 
 	if (conf.manualmode) printf("lightum v%s running in manual mode ", VERSION);
@@ -158,8 +164,8 @@ int main(int argc, char *argv[]) {
 
 	/* in manual mode, start with current brightness value */
 	if (conf.manualmode) {
-		brightness_restore=get_keyboard_brightness_value();
-		backlight_restore=get_screen_backlight_value();
+		if (conf.workmode == 1 || conf.workmode == 3) brightness_restore=get_keyboard_brightness_value();
+		if (conf.workmode == 2 || conf.workmode == 3) backlight_restore=get_screen_backlight_value();
 	}
 
 	if (conf.idleoff != 0 || conf.screenidle != 0) {
@@ -186,47 +192,55 @@ int main(int argc, char *argv[]) {
 
 		if (!conf.manualmode) {
 
-			brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
-			backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
+			if (conf.workmode == 1 || conf.workmode == 3) brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
+			if (conf.workmode == 2 || conf.workmode == 3) backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
 			if (verbose) printf("auto mode ");
 
 		} else {
 
 			if (verbose) printf("manual mode ");
-			if (idletime > conf.idleoff) {
-				if (brightness_restoreflag==0) {
-					if (debug == 1 || debug == 3) printf("brightness_restoreflag ");
-					brightness_restore=get_keyboard_brightness_value();
-					brightness_restoreflag=1;
+			if (conf.workmode == 1 || conf.workmode == 3) {
+				if (idletime > conf.idleoff) {
+					if (brightness_restoreflag==0) {
+						if (debug == 1 || debug == 3) printf("brightness_restoreflag ");
+						brightness_restore=get_keyboard_brightness_value();
+						brightness_restoreflag=1;
+					}
+					brightness=conf.minbrightness;
+				} else {
+					if (debug == 1 || debug == 3) printf("brightness restored ");
+					brightness=brightness_restore;
+					brightness_restoreflag=0;
 				}
+			}
+
+			if (conf.workmode == 2 || conf.workmode == 3) {
+				if (idletime > conf.screenidle) {
+					if (backlight_restoreflag==0) {
+						if (debug == 2 || debug == 3) printf("backlight_restoreflag ");
+						backlight_restore=get_screen_backlight_value();
+						backlight_restoreflag=1;
+					}
+					backlight=conf.minbacklight;
+				} else {
+					if (debug == 2 || debug == 3) printf("backlight restored ");
+					backlight=backlight_restore;
+					backlight_restoreflag=0;
+				}
+			}
+
+		}
+
+		if (conf.workmode == 1 || conf.workmode == 3) {
+			if ((conf.idleoff != 0) && (idletime > conf.idleoff)) {
 				brightness=conf.minbrightness;
-			} else {
-				if (debug == 1 || debug == 3) printf("brightness restored ");
-				brightness=brightness_restore;
-				brightness_restoreflag=0;
 			}
+		}
 
-			if (idletime > conf.screenidle) {
-				if (backlight_restoreflag==0) {
-					if (debug == 2 || debug == 3) printf("backlight_restoreflag ");
-					backlight_restore=get_screen_backlight_value();
-					backlight_restoreflag=1;
-				}
+		if (conf.workmode == 2 || conf.workmode == 3) {
+			if ((conf.screenidle != 0) && (idletime > conf.screenidle)) {
 				backlight=conf.minbacklight;
-			} else {
-				if (debug == 2 || debug == 3) printf("backlight restored ");
-				backlight=backlight_restore;
-				backlight_restoreflag=0;
 			}
-
-		}
-
-		if ((conf.idleoff != 0) && (idletime > conf.idleoff)) {
-			brightness=conf.minbrightness;
-		}
-
-		if ((conf.screenidle != 0) && (idletime > conf.screenidle)) {
-			backlight=conf.minbacklight;
 		}
 
 		if (conf.queryscreensaver) {
@@ -238,71 +252,79 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (debug == 1 || debug == 3) printf("maxbrightness: %d ",conf.maxbrightness);
-		if (verbose) printf("brightness: %d ",brightness);
+		if (conf.workmode == 1 || conf.workmode == 3) {
+			if (debug == 1 || debug == 3) printf("maxbrightness: %d ",conf.maxbrightness);
+			if (verbose) printf("brightness: %d ",brightness);
+		}
 
-		if (debug == 2 || debug == 3) printf("maxbacklight: %d ",conf.maxbacklight);
-		if (verbose) printf("backlight: %d ",backlight);
+		if (conf.workmode == 2 || conf.workmode == 3) {
+			if (debug == 2 || debug == 3) printf("maxbacklight: %d ",conf.maxbacklight);
+			if (verbose) printf("backlight: %d ",backlight);
+		}
 
 		// keyboard brightness
-		if (brightness!=brightness_prev) {
-			if (!conf.manualmode) {
-				brightness_restore=get_keyboard_brightness_value();
-				if (debug == 1 || debug == 3) printf("\ncurrent brightness: %d\n",brightness_restore);
-				if ((brightness_restore != brightness_prev) && (brightness_restoreflag)) {
-					if (!conf.ignoreuser) {
-						/* make sure maxbrightness is never <4 */
-						if (brightness_restore < 4) conf.maxbrightness=4;
-						else conf.maxbrightness=brightness_restore;
-						if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",brightness_restore);
-						brightness_prev=brightness_restore;
-					} else {
-						if (verbose) printf("-> Ignoring user brightness change, wants to set maxbrightness to %d\n",brightness_restore);
+		if (conf.workmode == 1 || conf.workmode == 3) {
+			if (brightness!=brightness_prev) {
+				if (!conf.manualmode) {
+					brightness_restore=get_keyboard_brightness_value();
+					if (debug == 1 || debug == 3) printf("\ncurrent brightness: %d\n",brightness_restore);
+					if ((brightness_restore != brightness_prev) && (brightness_restoreflag)) {
+						if (!conf.ignoreuser) {
+							/* make sure maxbrightness is never <4 */
+							if (brightness_restore < 4) conf.maxbrightness=4;
+							else conf.maxbrightness=brightness_restore;
+							if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",brightness_restore);
+							brightness_prev=brightness_restore;
+						} else {
+							if (verbose) printf("-> Ignoring user brightness change, wants to set maxbrightness to %d\n",brightness_restore);
+						}
+						brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
 					}
-					brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
+					brightness_restoreflag=1;
 				}
-				brightness_restoreflag=1;
+				if (debug == 1 || debug == 3) printf ("-> set keyboard brightness: %d -> %d\n",brightness_prev,brightness);
+				fading(brightness_prev,brightness);
+				usleep(1500);
+				tmp=get_keyboard_brightness_value();
+				if (tmp!=brightness) {
+					if (debug == 1 || debug == 3) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
+					set_keyboard_brightness_value(brightness);
+				}
+				brightness_prev=brightness;
 			}
-			if (debug == 1 || debug == 3) printf ("-> set keyboard brightness: %d -> %d\n",brightness_prev,brightness);
-			fading(brightness_prev,brightness);
-			usleep(1500);
-			tmp=get_keyboard_brightness_value();
-			if (tmp!=brightness) {
-				if (debug == 1 || debug == 3) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
-				set_keyboard_brightness_value(brightness);
-			}
-			brightness_prev=brightness;
 		}
 
 		// screen backlight
-		if (backlight!=backlight_prev) {
-			if (!conf.manualmode) {
-				backlight_restore=get_screen_backlight_value();
-				if (debug == 2 || debug == 3) printf("\ncurrent backlight: %d\n",backlight_restore);
-				if ((backlight_restore != backlight_prev) && (backlight_restoreflag)) {
-					if (!conf.ignoreuser) {
-						/* make sure maxbacklight is never <4 */
-						if (backlight_restore < 4) conf.maxbacklight=4;
-						else conf.maxbacklight=backlight_restore;
-						if (verbose) printf("-> Detected user backlight change, setting maxbacklight to %d\n",backlight_restore);
-						backlight_prev=backlight_restore;
-					} else {
-						if (verbose) printf("-> Ignoring user backlight change, wants to set maxbacklight to %d\n",backlight_restore);
+		if (conf.workmode == 2 || conf.workmode == 3) {
+			if (backlight!=backlight_prev) {
+				if (!conf.manualmode) {
+					backlight_restore=get_screen_backlight_value();
+					if (debug == 2 || debug == 3) printf("\ncurrent backlight: %d\n",backlight_restore);
+					if ((backlight_restore != backlight_prev) && (backlight_restoreflag)) {
+						if (!conf.ignoreuser) {
+							/* make sure maxbacklight is never <4 */
+							if (backlight_restore < 4) conf.maxbacklight=4;
+							else conf.maxbacklight=backlight_restore;
+							if (verbose) printf("-> Detected user backlight change, setting maxbacklight to %d\n",backlight_restore);
+							backlight_prev=backlight_restore;
+						} else {
+							if (verbose) printf("-> Ignoring user backlight change, wants to set maxbacklight to %d\n",backlight_restore);
+						}
+						backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
 					}
-					backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
+					backlight_restoreflag=1;
 				}
-				backlight_restoreflag=1;
+				if (debug == 2 || debug == 3) printf ("-> set screen backlight: %d -> %d\n",backlight_prev,backlight);
+				backlight_fading(backlight_prev,backlight);
+				usleep(1500);
+				backlight=get_screen_backlight_value();
+				tmp=get_screen_backlight_value();
+				if (tmp!=backlight) {
+					if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
+					set_screen_backlight_value(backlight);
+				}
+				backlight_prev=backlight;
 			}
-			if (debug == 2 || debug == 3) printf ("-> set screen backlight: %d -> %d\n",backlight_prev,backlight);
-			backlight_fading(backlight_prev,backlight);
-			usleep(1500);
-			backlight=get_screen_backlight_value();
-			tmp=get_screen_backlight_value();
-			if (tmp!=backlight) {
-				if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
-				set_screen_backlight_value(backlight);
-			}
-			backlight_prev=backlight;
 		}
 
 		if (verbose) printf("\n");

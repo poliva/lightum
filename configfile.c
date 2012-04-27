@@ -35,6 +35,7 @@ static const conf_data default_config = {
 	/* minbacklight */ 1,
 	/* maxbacklight */ 15,
 	/* screenidle */ 5,
+	/* workmode */ 3,
 };
 
 int file_exists(char* file) {
@@ -92,6 +93,11 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = ignore brightness changess happening outside lightum and keep the\n");
 	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
 	fprintf(fd, "ignoreuser=%d\n\n", default_config.ignoreuser);
+	fprintf(fd, "# workmode\n");
+	fprintf(fd, "#   1 = only manage keyboard brightness (ignore screen backlight)\n");
+	fprintf(fd, "#   2 = only manage screen backlight (ignore keyboard brightness)\n");
+	fprintf(fd, "#   3 = manage both keyboard brightness and screen backlight\n");
+	fprintf(fd, "workmode=%d\n\n", default_config.workmode);
 	fprintf(fd, "# maximum keyboard brightness value (between 4 and 255)\n");
 	fprintf(fd, "maxbrightness=%d\n\n", default_config.maxbrightness);
 	fprintf(fd, "# minimum keyboard brightness value (between 0 and 3)\n");
@@ -204,6 +210,13 @@ conf_data config_parse() {
 
 		if ((strncmp ("screenidle=", input, 11)) == 0) {
 			strncpy (temp, input + 11,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.screenidle = atoi(temp);
+		}
+
+		if ((strncmp ("workmode=", input, 9)) == 0) {
+			strncpy (temp, input + 9,MAXLEN-1);
 			len=strlen(temp);
 			temp[len+1]='\0';
 			config.screenidle = atoi(temp);
