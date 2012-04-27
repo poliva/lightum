@@ -73,6 +73,50 @@ int get_light_sensor_value() {
 	return atoi(a_light);
 }
 
+int get_screen_backlight_value() {
+	int ret=0, backlight=15;
+	backlight = dbus_get_screen_backlight_value();
+	if (backlight < 6 ) ret=0;
+	else if (backlight < 13) ret=1;
+	else if (backlight < 20) ret=2;
+	else if (backlight < 26) ret=3;
+	else if (backlight < 33) ret=4;
+	else if (backlight < 40) ret=5;
+	else if (backlight < 46) ret=6;
+	else if (backlight < 53) ret=7;
+	else if (backlight < 60) ret=8;
+	else if (backlight < 66) ret=9;
+	else if (backlight < 73) ret=10;
+	else if (backlight < 80) ret=11;
+	else if (backlight < 86) ret=12;
+	else if (backlight < 93) ret=13;
+	else if (backlight < 100) ret=14;
+	else if (backlight == 100) ret=15;
+	return ret;
+}
+
+int set_screen_backlight_value(int backlight) {
+	int value=100, ret=15;
+	if (backlight == 15) value=100;
+	else if (backlight == 14) value=97;
+	else if (backlight == 13) value=90;
+	else if (backlight == 12) value=83;
+	else if (backlight == 11) value=77;
+	else if (backlight == 10) value=70;
+	else if (backlight == 9) value=63;
+	else if (backlight == 8) value=57;
+	else if (backlight == 7) value=50;
+	else if (backlight == 6) value=43;
+	else if (backlight == 5) value=37;
+	else if (backlight == 4) value=30;
+	else if (backlight == 3) value=23;
+	else if (backlight == 2) value=17;
+	else if (backlight == 1) value=10;
+	else if (backlight == 0) value=0;
+	ret = dbus_set_screen_backlight_value(value);
+	return ret;
+}
+
 int calculate_keyboard_brightness_value(int light, int maxlight) {
 
 	int brightness=0;

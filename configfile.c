@@ -91,10 +91,10 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
 	fprintf(fd, "#   0 = do not monitor screensaver status\n");
 	fprintf(fd, "queryscreensaver=0\n\n");
-	fprintf(fd, "# maximum screen backlight value (between 50 and 100)\n");
-	fprintf(fd, "maxbacklight=100\n\n");
-	fprintf(fd, "# minimum screen backlight value (between 0 and 49)\n");
-	fprintf(fd, "minbacklight=10\n\n");
+	fprintf(fd, "# maximum screen backlight value (between 4 and 15)\n");
+	fprintf(fd, "maxbacklight=15\n\n");
+	fprintf(fd, "# minimum screen backlight value (between 0 and 3)\n");
+	fprintf(fd, "minbacklight=1\n\n");
 	fprintf(fd, "# turn off screen backlight if computer unused for X seconds (0 to disable)\n");
 	fprintf(fd, "screenidle=5\n\n");
 	fclose(fd);

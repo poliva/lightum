@@ -147,7 +147,7 @@ int set_keyboard_brightness_value(int brightness) {
 }
 
 
-int get_screen_backlight_value() {
+int dbus_get_screen_backlight_value() {
 
 	DBusConnection *connection;
 	DBusError error;
@@ -220,7 +220,7 @@ int get_screen_backlight_value() {
 	return retval;
 }
 
-int set_screen_backlight_value(int backlight) {
+int dbus_set_screen_backlight_value(int backlight) {
 
 	DBusConnection *connection;
 	DBusError error;
