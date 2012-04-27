@@ -219,7 +219,7 @@ conf_data config_parse() {
 			strncpy (temp, input + 9,MAXLEN-1);
 			len=strlen(temp);
 			temp[len+1]='\0';
-			config.screenidle = atoi(temp);
+			config.workmode = atoi(temp);
 		}
 	}
 
