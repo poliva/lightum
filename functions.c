@@ -23,7 +23,7 @@ int get_keyboard_brightness_value() {
 
 	int fd;
 	char buf[5];
-	char *kbd_backlight="/sys/devices/platform/applesmc.768/leds/smc::kbd_backlight/brightness";
+	const char *kbd_backlight="/sys/devices/platform/applesmc.768/leds/smc::kbd_backlight/brightness";
 	ssize_t cnt;
 
 	/* read light sensor value */
@@ -46,7 +46,7 @@ int get_light_sensor_value() {
 	size_t i,n=0;
 	char buf[10];
 	char a_light[10];
-	char *light_sensor="/sys/devices/platform/applesmc.768/light";
+	const char *light_sensor="/sys/devices/platform/applesmc.768/light";
 	ssize_t cnt;
 
 	/* read light sensor value */
