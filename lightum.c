@@ -27,8 +27,9 @@
 
 #define VERSION "1.7"
 
-void usage() {
+void usage(const char *error) {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
+	fprintf(stderr, "%s",error);
 	fprintf(stderr, "Usage:  lightum [OPTION]...\n");
 	fprintf(stderr, "     -m 4..255 : maximum brightness value in auto mode (default=255)\n");
 	fprintf(stderr, "     -n 0..3   : minimum brightness value in auto mode (default=0)\n");
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
 	while ((c = getopt(argc, argv, "hxusvfm:n:M:N:p:I:i:d:?")) != EOF) {
 		switch(c) {
 			case 'h':
-				usage();
+				usage("");
 				break;
 			case 'x':
 				conf.manualmode=1;
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]) {
 				conf.screenidle=atoi(optarg);
 				break;
 			default:
-				usage();
+				usage("ERROR: Unknown OPTION\n");
 				break;
 		}
 	}
@@ -125,17 +126,17 @@ int main(int argc, char *argv[]) {
 	if (verbose) printf("\tscreenidle: %d\n\n",conf.screenidle);
 
 	// make sure all config values are correct
-	if (conf.manualmode < 0 || conf.manualmode > 1) usage();
-	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage();
-	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage();
-	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage();
-	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage();
-	if (conf.maxbacklight < 4 || conf.maxbacklight > 15) usage();
-	if (conf.minbacklight < 0 || conf.minbacklight > 3) usage();
-	if (conf.polltime < 1 || conf.polltime > 100000) usage();
-	if (conf.idleoff < 0 || conf.idleoff > 86400) usage();
-	if (conf.screenidle < 0 || conf.screenidle > 86400) usage();
-	if (debug < 0 || debug > 3) usage();
+	if (conf.manualmode < 0 || conf.manualmode > 1) usage("ERROR: Wrong value in config variable 'manualmode'\n");
+	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage("ERROR: Wrong value in config variable 'ignoreuser'\n");
+	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage("ERROR: Wrong value in config variable 'queryscreensaver'\n");
+	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage("ERROR: Wrong value in config variable 'maxbrightness'\n");
+	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage("ERROR: Wrong value in config variable 'minbrightness'\n");
+	if (conf.maxbacklight < 4 || conf.maxbacklight > 15) usage("ERROR: Wrong value in config variable 'maxbacklight'\n");
+	if (conf.minbacklight < 0 || conf.minbacklight > 3) usage("ERROR: Wrong value in config variable 'minbacklight'\n");
+	if (conf.polltime < 1 || conf.polltime > 100000) usage("ERROR: Wrong value in config variable 'polltime'\n");
+	if (conf.idleoff < 0 || conf.idleoff > 86400) usage("ERROR: Wrong value in config variable 'idleoff'\n");
+	if (conf.screenidle < 0 || conf.screenidle > 86400) usage("ERROR: Wrong value in config variable 'screenidle'\n");
+	if (debug < 0 || debug > 3) usage("ERROR: Wrong value in config variable 'debug'\n");
 
 	if (conf.manualmode) printf("lightum v%s running in manual mode ", VERSION);
 	else printf("lightum v%s running in auto mode ", VERSION);
