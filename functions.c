@@ -118,21 +118,22 @@ int set_screen_backlight_value(int backlight) {
 	return ret;
 }
 
-int calculate_keyboard_brightness_value(int light, int maxlight) {
+int calculate_keyboard_brightness_value(int light, int maxlight, int minlight) {
 
 	int brightness=0;
 	
 	if (light == 0) brightness=maxlight;
 	else brightness = (maxlight/2)/light;
+	if (brightness < minlight) brightness=minlight;
 
 	return brightness;
 }
 
-int calculate_screen_backlight_value(int light, int maxlight) {
+int calculate_screen_backlight_value(int light, int maxlight, int minlight) {
 
 	int backlight=0;
 
-	if (light == 0) backlight=maxlight*0.10;
+	if (light == 0) backlight=minlight;
 	else if (light < 4) backlight=maxlight*0.20;
 	else if (light < 8) backlight=maxlight*0.30;
 	else if (light < 16) backlight=maxlight*0.40;
@@ -140,6 +141,7 @@ int calculate_screen_backlight_value(int light, int maxlight) {
 	else if (light < 64) backlight=maxlight*0.75;
 	else if (light < 128) backlight=maxlight*0.90;
 	else if (light >= 128) backlight=maxlight;
+	if (backlight < minlight) backlight=minlight;
 
 	return backlight;
 }

@@ -195,8 +195,8 @@ int main(int argc, char *argv[]) {
 
 		if (!conf.manualmode) {
 
-			if (conf.workmode == 1 || conf.workmode == 3) brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
-			if (conf.workmode == 2 || conf.workmode == 3) backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
+			if (conf.workmode == 1 || conf.workmode == 3) brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness, conf.minbrightness);
+			if (conf.workmode == 2 || conf.workmode == 3) backlight=calculate_screen_backlight_value(light, conf.maxbacklight, conf.minbacklight);
 			if (verbose) printf("auto mode ");
 
 		} else {
@@ -281,7 +281,7 @@ int main(int argc, char *argv[]) {
 						} else {
 							if (verbose) printf("-> Ignoring user brightness change, wants to set maxbrightness to %d\n",brightness_restore);
 						}
-						brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness);
+						brightness=calculate_keyboard_brightness_value(light, conf.maxbrightness, conf.minbrightness);
 					}
 					brightness_restoreflag=1;
 				}
@@ -313,7 +313,7 @@ int main(int argc, char *argv[]) {
 						} else {
 							if (verbose) printf("-> Ignoring user backlight change, wants to set maxbacklight to %d\n",backlight_restore);
 						}
-						backlight=calculate_screen_backlight_value(light, conf.maxbacklight);
+						backlight=calculate_screen_backlight_value(light, conf.maxbacklight, conf.minbacklight);
 					}
 					backlight_restoreflag=1;
 				}
