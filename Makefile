@@ -10,6 +10,7 @@ srcdir = .
 prefix = $(DESTDIR)
 bindir = $(prefix)/usr/bin
 docdir = $(prefix)/usr/share/doc
+mandir = $(prefix)/usr/share/man
 
 OBJ=functions.o dbus.o configfile.o lightum.o
 BIN=lightum
@@ -25,11 +26,13 @@ install: all
 	mkdir -p $(docdir)/lightum/
 	$(INSTALLDATA) $(srcdir)/README $(docdir)/lightum/
 	$(INSTALLDATA) $(srcdir)/LICENSE $(docdir)/lightum/
+	$(INSTALLDATA) $(srcdir)/lightum.1 $(mandir)/man1/
 
 uninstall:
 	rm -rf $(bindir)/lightum
 	rm -rf $(prefix)/etc/xdg/autostart/lightum.desktop
 	rm -rf $(docdir)/lightum/
+	rm -rf $(mandir)/man1/lightum.1
 
 clean:
 	rm -f lightum *.o
