@@ -1,0 +1,146 @@
+=head1 NAME
+
+lightum - MacBook automatic light sensor daemon
+
+=head1 SYNOPSIS
+
+lightum [-m I<value>] [-n I<value>] [-M I<value>] [-N I<value>] [-p I<value>] [-i I<value>] [-I I<value>] [-w {1,2,3}] [-x] [-u] [-s] [-f] [-v] [-d {1,2,3}]
+
+=head1 DESCRIPTION
+
+lightum is a daemon to control the keyboard brightness and monitor backlight on
+MacBook based laptops.
+
+By default it will run in "auto" mode, this means it will read data from the
+ambient light sensor (located on the iSight camera) and automatically:
+
+	a) light up or dim the keyboard brightness 
+	b) light up or dim the the video backlight 
+
+It will also dim the keyboard brightness and screen backlight when the computer
+is not used for a configurable amount of seconds (5 by default).
+
+If you choose to run it in "manual" mode, it will not query the ambient light
+sensor, but instead it will use the brightness and backlight values you set
+manually using the function keys.
+
+When first launched lightum will create a configuration file in the folder
+~/.config/lightum/lightum.conf, inside the user's home directory with the
+default configuration values. When launched without parameters, lightum will
+read the configuration from this config file, but the configuration values can
+be overwritten via the command line.
+
+=head1 OPTIONS
+
+Usage:  lightum [OPTION]...
+     B<-m> I<4..255> : maximum brightness value in auto mode (default=255)
+     B<-n> I<0..3>   : minimum brightness value in auto mode (default=0)
+     B<-M> I<4..15>  : maximum backlight value in auto mode (default=15)
+     B<-N> I<1..3>   : minimum backlight value in auto mode (default=1)
+     B<-p> I<num>    : number of milliseconds between light sensor polls (default=300)
+     B<-i> I<num>    : power off keyboard light on session idle seconds (0 to disable)
+     B<-I> I<num>    : power off screen backlight on session idle seconds (0 to disable)
+     B<-w> I<num>    : 1 manage brightness, 2 manage backlight, 3 both (default:3)
+     B<-x>        : manual mode (will honor the brightness value set with Fn keys)
+     B<-u>        : do not ignore brightness changes happening outside lightum
+     B<-s>        : power off keyboard light when screen saver is active
+     B<-f>        : run in foreground (do not daemonize)
+     B<-v>        : verbose mode, useful for debugging with -f and -d
+     B<-d> I<num>    : debug mode: 1 brightness, 2 backlight, 3 both
+
+
+=head1 CONFIGURATION FILE
+
+B<General options>:
+
+     # manualmode
+     #   0 = automatically adjust keyboard brightness based on light sensor
+     #   1 = or control keyboard brightness manually using Fn+ F5/F6 keys
+     manualmode=0
+     
+     # ignoreuser: only has effect in auto-mode (when manualmode=0)
+     #   0 = change maxbrightness value dinamically when user presses Fn+ F5/F6
+     #   1 = ignore brightness changess happening outside lightum and keep the
+     #       maxbrightness value from the config file (fixes bug in ubuntu 12.04)
+     ignoreuser=1
+     
+     # workmode
+     #   1 = only manage keyboard brightness (ignore screen backlight)
+     #   2 = only manage screen backlight (ignore keyboard brightness)
+     #   3 = manage both keyboard brightness and screen backlight
+     workmode=3
+     
+     # poll time in milliseconds (used for light sensor and session idle time)
+     polltime=300
+
+     # screensaver
+     #   1 = turn off keyboard brightness when screensaver is active
+     #   0 = do not monitor screensaver status
+     queryscreensaver=0
+
+B<Options to manage keyboard brightness>:
+
+     # maximum keyboard brightness value (between 4 and 255)
+     maxbrightness=56
+     
+     # minimum keyboard brightness value (between 0 and 3)
+     minbrightness=2
+     
+     # turn off keyboard brightness if computer unused for X seconds (0 to disable)
+     idleoff=4
+
+B<Options to manage screen backlight>:
+     
+     # maximum screen backlight value (between 4 and 15)
+     maxbacklight=12
+     
+     # minimum screen backlight value (between 0 and 3)
+     minbacklight=2
+     
+     # turn off screen backlight if computer unused for X seconds (0 to disable)
+     screenidle=30
+
+=head1 EXAMPLES
+
+1) Run lightum in auto mode, managing both screen backlight and keyboard brightness automatically, changing the maximum and minimum values for both options and also changing the idle times to dim them:
+
+	lightum -m 56 -n 2 -i 4 -M 12 -N 2 -I 30
+
+The same command line example, but specified via config file:
+
+	manualmode=0
+	ignoreuser=1
+	workmode=3
+	maxbrightness=56
+	minbrightness=2
+	polltime=300
+	idleoff=4
+	queryscreensaver=0
+	maxbacklight=12
+	minbacklight=2
+	screenidle=30
+
+2) Run lightum in manual mode, used only to automatically turn off the keyboard brightness after 10 seconds of idle time
+
+	lightum -x -w 1 -i 10 -n 0
+
+
+=head1 EXIT STATUS
+
+Lightum will return a non zero exit status in case of failure.
+
+=head1 AUTHOR
+
+Written by Pau Oliva Fora
+
+=head1 REPORTING BUGS
+
+Please report bugs here:
+https://github.com/poliva/lightum/issues
+
+=head1 COPYRIGHT
+
+Copyright (c)2011-2012 Pau Oliva Fora.
+License GPLv2+: GNU GPL version 2 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
