@@ -134,12 +134,19 @@ int calculate_screen_backlight_value(int light, int maxlight, int minlight) {
 	int backlight=0;
 
 	if (light == 0) backlight=minlight;
+	else if (light < 2) backlight=maxlight*0.15;
 	else if (light < 4) backlight=maxlight*0.20;
 	else if (light < 8) backlight=maxlight*0.30;
+	else if (light < 12) backlight=maxlight*0.35;
 	else if (light < 16) backlight=maxlight*0.40;
-	else if (light < 32) backlight=maxlight*0.50;
-	else if (light < 64) backlight=maxlight*0.75;
-	else if (light < 128) backlight=maxlight*0.90;
+	else if (light < 24) backlight=maxlight*0.50;
+	else if (light < 32) backlight=maxlight*0.55;
+	else if (light < 48) backlight=maxlight*0.60;
+	else if (light < 56) backlight=maxlight*0.70;
+	else if (light < 60) backlight=maxlight*0.75;
+	else if (light < 64) backlight=maxlight*0.80;
+	else if (light < 96) backlight=maxlight*0.90;
+	else if (light < 128) backlight=maxlight*0.95;
 	else if (light >= 128) backlight=maxlight;
 	if (backlight < minlight) backlight=minlight;
 
