@@ -26,6 +26,7 @@ install: all
 	mkdir -p $(docdir)/lightum/
 	$(INSTALLDATA) $(srcdir)/README $(docdir)/lightum/
 	$(INSTALLDATA) $(srcdir)/LICENSE $(docdir)/lightum/
+	mkdir -p $(mandir)/man1/
 	$(INSTALLDATA) $(srcdir)/lightum.1 $(mandir)/man1/
 
 uninstall:
