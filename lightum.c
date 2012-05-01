@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "2.0"
+#define VERSION "2.0.1"
 
 void usage(const char *error) {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
@@ -294,7 +294,7 @@ int main(int argc, char *argv[]) {
 				tmp=get_keyboard_brightness_value();
 				if (tmp!=brightness) {
 					if (debug == 1 || debug == 3) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
-					set_keyboard_brightness_value(brightness);
+					fading(tmp,brightness);
 				}
 			}
 		}
@@ -329,7 +329,7 @@ int main(int argc, char *argv[]) {
 				tmp=get_screen_backlight_value();
 				if (tmp!=backlight) {
 					if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
-					set_screen_backlight_value(backlight);
+					backlight_fading(tmp,backlight);
 				}
 			}
 		}
