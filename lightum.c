@@ -183,6 +183,12 @@ int main(int argc, char *argv[]) {
 
 	while(1) {
 
+		if (! get_session_active() ) {
+			if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
+			usleep(conf.polltime*1000);
+			continue;
+		}
+
 		if (!conf.manualmode) {
 			light=get_light_sensor_value();
 			if (verbose) printf("light_sensor: %d ",light);

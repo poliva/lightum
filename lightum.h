@@ -34,3 +34,6 @@ int get_screensaver_active();
 int set_keyboard_brightness_value(int brightness);
 int dbus_get_screen_backlight_value();
 int dbus_set_screen_backlight_value(int backlight);
+
+/* dbus-session.c */
+int get_session_active();

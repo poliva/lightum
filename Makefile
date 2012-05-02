@@ -1,8 +1,8 @@
 DESTDIR?=/
 SHELL = /bin/sh
 CC?=gcc
-CFLAGS = `pkg-config --cflags dbus-1` -Wall -Wextra -Wwrite-strings -O -g
-LDFLAGS= `pkg-config --libs dbus-1` -lX11 -lXext -lXss
+CFLAGS = `pkg-config --cflags dbus-1 --cflags dbus-glib-1` -Wall -Wextra -Wwrite-strings -O -g
+LDFLAGS= `pkg-config --libs dbus-1 --libs dbus-glib-1` -lX11 -lXext -lXss
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
 
@@ -12,7 +12,7 @@ bindir = $(prefix)/usr/bin
 docdir = $(prefix)/usr/share/doc
 mandir = $(prefix)/usr/share/man
 
-OBJ=functions.o dbus.o configfile.o lightum.o
+OBJ=functions.o dbus.o dbus-session.o configfile.o lightum.o
 BIN=lightum
 
 all: ${OBJ}
