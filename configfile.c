@@ -34,7 +34,7 @@ static const conf_data default_config = {
 	/* ignoreuser */ 1,
 	/* minbacklight */ 1,
 	/* maxbacklight */ 15,
-	/* screenidle */ 5,
+	/* screenidle */ 30,
 	/* workmode */ 3,
 };
 
