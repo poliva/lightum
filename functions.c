@@ -16,6 +16,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/scrnsaver.h>
 #include <signal.h>
+#include <sys/stat.h>
 
 #include "lightum.h"
 
@@ -74,25 +75,55 @@ int get_light_sensor_value() {
 }
 
 int get_screen_backlight_value() {
-	int ret=0, backlight=15;
-	backlight = dbus_get_screen_backlight_value();
-	if (backlight < 6 ) ret=0;
-	else if (backlight < 13) ret=1;
-	else if (backlight < 20) ret=2;
-	else if (backlight < 26) ret=3;
-	else if (backlight < 33) ret=4;
-	else if (backlight < 40) ret=5;
-	else if (backlight < 46) ret=6;
-	else if (backlight < 53) ret=7;
-	else if (backlight < 60) ret=8;
-	else if (backlight < 66) ret=9;
-	else if (backlight < 73) ret=10;
-	else if (backlight < 80) ret=11;
-	else if (backlight < 86) ret=12;
-	else if (backlight < 93) ret=13;
-	else if (backlight < 100) ret=14;
-	else if (backlight == 100) ret=15;
-	return ret;
+
+	int fd;
+	char buf[5];
+	struct stat tmp;
+	const char *scr_backlight="/sys/devices/pci0000:00/0000:00:02.0/backlight/acpi_video0/actual_brightness";
+	ssize_t cnt;
+        int ret=0, backlight=15;
+
+	if (stat(scr_backlight, &tmp) == 0) {
+
+		/* read screen backlight value */
+		fd = open(scr_backlight, O_RDONLY);
+		if (fd < 0) {
+			perror (scr_backlight);
+			fprintf (stderr, "Can't open %s\n",scr_backlight);
+			exit(1);
+		}
+		cnt=read(fd, buf, sizeof(buf)-1);
+		buf[cnt]='\0';
+		close(fd);
+
+		return atoi(buf);
+
+	} else {
+
+		// fallback to read the current screen backlight value using dbus
+		// we prefer to avoid this because it forks gsd-backlight-helper
+		// from gnome-settings-daemon on each call.
+
+		backlight = dbus_get_screen_backlight_value();
+		if (backlight < 6 ) ret=0;
+		else if (backlight < 13) ret=1;
+		else if (backlight < 20) ret=2;
+		else if (backlight < 26) ret=3;
+		else if (backlight < 33) ret=4;
+		else if (backlight < 40) ret=5;
+		else if (backlight < 46) ret=6;
+		else if (backlight < 53) ret=7;
+		else if (backlight < 60) ret=8;
+		else if (backlight < 66) ret=9;
+		else if (backlight < 73) ret=10;
+		else if (backlight < 80) ret=11;
+		else if (backlight < 86) ret=12;
+		else if (backlight < 93) ret=13;
+		else if (backlight < 100) ret=14;
+		else if (backlight == 100) ret=15;
+		return ret;
+
+	}
 }
 
 int set_screen_backlight_value(int backlight) {
