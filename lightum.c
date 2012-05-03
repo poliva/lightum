@@ -50,7 +50,7 @@ void usage(const char *error) {
 
 int main(int argc, char *argv[]) {
 
-	int screensaver, c, brightness_prev=-1, backlight_prev=-1;
+	int screensaver=0, c, brightness_prev=-1, backlight_prev=-1;
 	int light=0, brightness=255, backlight=100;
 	int foreground=0, verbose=0, debug=0;
 	int brightness_restore, backlight_restore, brightness_restoreflag=0, backlight_restoreflag=0;
@@ -209,32 +209,36 @@ int main(int argc, char *argv[]) {
 
 			if (verbose) printf("manual mode ");
 			if (conf.workmode == 1 || conf.workmode == 3) {
-				if (idletime > conf.idleoff) {
-					if (brightness_restoreflag==0) {
-						if (debug == 1 || debug == 3) printf("brightness_restoreflag ");
-						brightness_restore=get_keyboard_brightness_value();
-						brightness_restoreflag=1;
+				if (!screensaver) {
+					if (idletime > conf.idleoff) {
+						if (brightness_restoreflag==0) {
+							brightness_restore=get_keyboard_brightness_value();
+							brightness_restoreflag=1;
+							if (debug == 1 || debug == 3) printf("brightness_restoreflag(%d) ", brightness_restore);
+						}
+						brightness=conf.minbrightness;
+					} else {
+						brightness=brightness_restore;
+						brightness_restoreflag=0;
+						if (debug == 1 || debug == 3) printf("brightness_restored(%d) ", brightness_restore);
 					}
-					brightness=conf.minbrightness;
-				} else {
-					if (debug == 1 || debug == 3) printf("brightness restored ");
-					brightness=brightness_restore;
-					brightness_restoreflag=0;
 				}
 			}
 
 			if (conf.workmode == 2 || conf.workmode == 3) {
-				if (idletime > conf.screenidle) {
-					if (backlight_restoreflag==0) {
-						if (debug == 2 || debug == 3) printf("backlight_restoreflag ");
-						backlight_restore=get_screen_backlight_value();
-						backlight_restoreflag=1;
+				if (!screensaver) {
+					if (idletime > conf.screenidle) {
+						if (backlight_restoreflag==0) {
+							backlight_restore=get_screen_backlight_value();
+							backlight_restoreflag=1;
+							if (debug == 2 || debug == 3) printf("backlight_restoreflag(%d) ", backlight_restore);
+						}
+						backlight=conf.minbacklight;
+					} else {
+						backlight=backlight_restore;
+						backlight_restoreflag=0;
+						if (debug == 2 || debug == 3) printf("backlight_restored(%d) ", backlight_restore);
 					}
-					backlight=conf.minbacklight;
-				} else {
-					if (debug == 2 || debug == 3) printf("backlight restored ");
-					backlight=backlight_restore;
-					backlight_restoreflag=0;
 				}
 			}
 
