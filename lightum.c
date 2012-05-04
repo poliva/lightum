@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	conf_data conf;
 	Display *display = NULL;
+        DBusGConnection *connection;
 
 	// overwrite defaults with config file
 	conf = config_parse();
@@ -181,9 +182,11 @@ int main(int argc, char *argv[]) {
 
 	signal_installer();
 
+        connection = get_dbus_connection();
+
 	while(1) {
 
-		if (! get_session_active() ) {
+		if (! get_session_active(connection) ) {
 			if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
 			usleep(conf.polltime*1000);
 			continue;

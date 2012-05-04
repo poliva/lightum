@@ -19,8 +19,13 @@
 #define CONFIG_PATH ".config/lightum/"
 #define CONFIG_FILE "lightum.conf"
 
-#define TRUE 1
-#define FALSE 0
+#ifndef FALSE
+#define FALSE   (0)
+#endif
+
+#ifndef TRUE
+#define TRUE    (!FALSE)
+#endif
 
 #define MAXLEN 80
 

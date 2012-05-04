@@ -1,4 +1,5 @@
 #include <X11/Xlib.h>
+#include <dbus/dbus-glib-lowlevel.h>
 /* config file */
 typedef struct {
 	int manualmode;
@@ -36,4 +37,5 @@ int dbus_get_screen_backlight_value();
 int dbus_set_screen_backlight_value(int backlight);
 
 /* dbus-session.c */
-int get_session_active();
+DBusGConnection* get_dbus_connection();
+int get_session_active (DBusGConnection *connection);

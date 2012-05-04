@@ -12,6 +12,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
 #define CK_NAME      "org.freedesktop.ConsoleKit"
@@ -39,35 +40,13 @@ static gboolean get_boolean (DBusGProxy *proxy, const char *method, gboolean *va
         return res;
 }
 
-int is_active_local_session (DBusGConnection *connection, const char *ssid)
-{
-        DBusGProxy *proxy;
-        gboolean    is_active;
-        gboolean    is_local;
-
-        proxy = dbus_g_proxy_new_for_name (connection,
-                                           CK_NAME,
-                                           ssid,
-                                           CK_SESSION_INTERFACE);
-        if (proxy == NULL) {
-                return -1;
-        }
-
-        get_boolean (proxy, "IsActive", &is_active);
-        get_boolean (proxy, "IsLocal", &is_local);
-
-        g_object_unref (proxy);
-
-	if (is_active && is_local) return 1;
-	else return 0;
-
-}
-
-int is_current_session (DBusGConnection *connection)
+int get_session_active (DBusGConnection *connection)
 {
         DBusGProxy *proxy;
         GError     *error;
         gboolean    res;
+        gboolean    is_active;
+        gboolean    is_local;
 	char *ssid;
 
         proxy = dbus_g_proxy_new_for_name (connection,
@@ -93,12 +72,26 @@ int is_current_session (DBusGConnection *connection)
 
 	g_object_unref (proxy);
 
-	return is_active_local_session(connection, ssid);
+        proxy = dbus_g_proxy_new_for_name (connection,
+                                           CK_NAME,
+                                           ssid,
+                                           CK_SESSION_INTERFACE);
+        if (proxy == NULL) {
+                return -1;
+        }
+
+        get_boolean (proxy, "IsActive", &is_active);
+        get_boolean (proxy, "IsLocal", &is_local);
+
+        g_object_unref (proxy);
+
+	if (is_active && is_local) return 1;
+	else return 0;
 
 }
 
 
-int get_session_active ()
+DBusGConnection* get_dbus_connection()
 {
         DBusGConnection *connection;
 
@@ -116,7 +109,7 @@ int get_session_active ()
         if (! retval) {
                 g_warning ("%s", error->message);
                 g_error_free (error);
-                return (-1);
+                exit(1);
         }
 
         error = NULL;
@@ -124,8 +117,8 @@ int get_session_active ()
         if (connection == NULL) {
                 g_message ("Failed to connect to the D-Bus daemon: %s", error->message);
                 g_error_free (error);
-                return (-1);
+                exit(1);
         }
 
-	return is_current_session (connection);
+	return connection;
 }
