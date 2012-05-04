@@ -61,6 +61,8 @@ int main(int argc, char *argv[]) {
 	conf_data conf;
 	Display *display = NULL;
         DBusGConnection *connection;
+        DBusGProxy *proxy_manager;
+        DBusGProxy *proxy_session;
 
 	// overwrite defaults with config file
 	conf = config_parse();
@@ -183,10 +185,12 @@ int main(int argc, char *argv[]) {
 	signal_installer();
 
         connection = get_dbus_connection();
+	proxy_manager = get_dbus_proxy_manager(connection);
+	proxy_session = get_dbus_proxy_session(connection, proxy_manager);
 
 	while(1) {
 
-		if (! get_session_active(connection) ) {
+		if (! get_session_active(proxy_session) ) {
 			if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
 			usleep(conf.polltime*1000);
 			continue;
@@ -353,5 +357,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	//if (conf.idleoff != 0) XCloseDisplay(display);
+	//dbus_g_connection_unref(connection);
 	exit(0);
 }

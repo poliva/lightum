@@ -40,56 +40,70 @@ static gboolean get_boolean (DBusGProxy *proxy, const char *method, gboolean *va
         return res;
 }
 
-int get_session_active (DBusGConnection *connection)
+int get_session_active (DBusGProxy *proxy_session)
 {
-        DBusGProxy *proxy;
-        GError     *error;
-        gboolean    res;
         gboolean    is_active;
         gboolean    is_local;
-	char *ssid;
 
-        proxy = dbus_g_proxy_new_for_name (connection,
-                                           CK_NAME,
-                                           CK_MANAGER_PATH,
-                                           CK_MANAGER_INTERFACE);
-
-        if (proxy == NULL) {
-                return -1;
-        }
-
-        error = NULL;
-        res = dbus_g_proxy_call (proxy,
-                                 "GetCurrentSession",
-                                 &error,
-                                 G_TYPE_INVALID,
-                                 DBUS_TYPE_G_OBJECT_PATH, &ssid,
-                                 G_TYPE_INVALID);
-        if (! res) {
-                g_warning ("%s failed: %s", "GetCurrentSession", error->message);
-                g_error_free (error);
-        }
-
-	g_object_unref (proxy);
-
-        proxy = dbus_g_proxy_new_for_name (connection,
-                                           CK_NAME,
-                                           ssid,
-                                           CK_SESSION_INTERFACE);
-        if (proxy == NULL) {
-                return -1;
-        }
-
-        get_boolean (proxy, "IsActive", &is_active);
-        get_boolean (proxy, "IsLocal", &is_local);
-
-        g_object_unref (proxy);
+        get_boolean (proxy_session, "IsActive", &is_active);
+        get_boolean (proxy_session, "IsLocal", &is_local);
 
 	if (is_active && is_local) return 1;
 	else return 0;
 
 }
 
+DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *proxy_manager)
+{
+
+        DBusGProxy *proxy;
+        GError     *error;
+        gboolean    res;
+	char *ssid;
+
+        error = NULL;
+        res = dbus_g_proxy_call (proxy_manager,
+                                 "GetCurrentSession",
+                                 &error,
+                                 G_TYPE_INVALID,
+                                 DBUS_TYPE_G_OBJECT_PATH, &ssid,
+                                 G_TYPE_INVALID);
+
+	g_object_unref (proxy_manager);
+
+        if (! res) {
+                g_warning ("%s failed: %s", "GetCurrentSession", error->message);
+                g_error_free (error);
+        }
+
+        proxy = dbus_g_proxy_new_for_name (connection,
+                                           CK_NAME,
+                                           ssid,
+                                           CK_SESSION_INTERFACE);
+
+        if (proxy == NULL) 
+                exit(1);
+
+
+	return proxy;
+
+}
+
+DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection)
+{
+
+        DBusGProxy *proxy;
+
+        proxy = dbus_g_proxy_new_for_name (connection,
+                                           CK_NAME,
+                                           CK_MANAGER_PATH,
+                                           CK_MANAGER_INTERFACE);
+        if (proxy == NULL) 
+                exit(1);
+
+	return proxy;
+
+}
 
 DBusGConnection* get_dbus_connection()
 {

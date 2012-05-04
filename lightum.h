@@ -38,4 +38,6 @@ int dbus_set_screen_backlight_value(int backlight);
 
 /* dbus-session.c */
 DBusGConnection* get_dbus_connection();
-int get_session_active (DBusGConnection *connection);
+DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection);
+DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *proxy_manager);
+int get_session_active (DBusGProxy *proxy_session);
