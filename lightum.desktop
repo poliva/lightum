@@ -11,5 +11,5 @@ X-KDE-autostart-after=panel
 X-KDE-StartupNotify=false
 Name[en_US]=lightum
 Name=lightum
-Comment[en_US]=Adjust keyboard backlight automatically.
-Comment=Adjust keyboard backlight automatically.
+Comment[en_US]=MacBook automatic light sensor daemon.
+Comment=MacBook automatic light sensor daemon.
