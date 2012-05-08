@@ -90,8 +90,8 @@ int create_config_file(char* file) {
 
 	fprintf(fd, "# lightum configuration file\n\n");
 	fprintf(fd, "# manualmode\n");
-	fprintf(fd, "#   0 = automatically adjust keyboard brightness based on light sensor\n");
-	fprintf(fd, "#   1 = or control keyboard brightness manually using Fn+ F5/F6 keys\n");
+	fprintf(fd, "#   0 = automatically adjust brightness/backlight based on light sensor\n");
+	fprintf(fd, "#   1 = or control brightness/backlight manually using Fn+ F5/F6 keys\n");
 	fprintf(fd, "manualmode=%d\n\n", default_config.manualmode);
 	fprintf(fd, "# ignoreuser: only has effect in auto-mode (when manualmode=0)\n");
 	fprintf(fd, "#   0 = change maxbrightness value dinamically when user presses Fn+ F5/F6\n");
@@ -117,7 +117,7 @@ int create_config_file(char* file) {
 	fprintf(fd, "queryscreensaver=%d\n\n", default_config.queryscreensaver);
 	fprintf(fd, "# maximum screen backlight value (between 4 and 15)\n");
 	fprintf(fd, "maxbacklight=%d\n\n", default_config.maxbacklight);
-	fprintf(fd, "# minimum screen backlight value (between 0 and 3)\n");
+	fprintf(fd, "# minimum screen backlight value (between 1 and 3)\n");
 	fprintf(fd, "minbacklight=%d\n\n", default_config.minbacklight);
 	fprintf(fd, "# turn off screen backlight if computer unused for X seconds (0 to disable)\n");
 	fprintf(fd, "screenidle=%d\n\n", default_config.screenidle);
