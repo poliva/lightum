@@ -364,9 +364,9 @@ int dbus_set_screen_backlight_value_kde(int backlight) {
 	if (reply)
 	{
 		dbus_message_iter_init (reply, &iter);
-		dbus_bool_t val;
-		dbus_message_iter_get_basic (&iter, &val);
-		retval = val;
+		//dbus_bool_t val;
+		//dbus_message_iter_get_basic (&iter, &val);
+		//retval = val;
 		dbus_message_unref (reply);
 	}
 
