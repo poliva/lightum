@@ -76,10 +76,11 @@ int get_light_sensor_value() {
 
 int get_screen_backlight_value() {
 
-	int fd;
+	int fd, actual_backlight, max_backlight;
 	char buf[5];
 	struct stat tmp;
-	const char *scr_backlight="/sys/devices/pci0000:00/0000:00:02.0/backlight/acpi_video0/actual_brightness";
+	const char *scr_backlight="/sys/class/backlight/acpi_video0/actual_brightness";
+	const char *scr_maxbacklight="/sys/class/backlight/acpi_video0/max_brightness";
 	ssize_t cnt;
         int ret=0, backlight=15;
 
@@ -95,11 +96,24 @@ int get_screen_backlight_value() {
 		cnt=read(fd, buf, sizeof(buf)-1);
 		buf[cnt]='\0';
 		close(fd);
+		actual_backlight=atoi(buf);
 
-		return atoi(buf);
+		/* read screen max backlight value */
+		fd = open(scr_maxbacklight, O_RDONLY);
+		if (fd < 0) {
+			perror (scr_backlight);
+			fprintf (stderr, "Can't open %s\n",scr_backlight);
+			exit(1);
+		}
+		cnt=read(fd, buf, sizeof(buf)-1);
+		buf[cnt]='\0';
+		close(fd);
+		max_backlight=atoi(buf);
+
+		/* make sure we always retrn a value between 0 and 15 */
+		return (15*actual_backlight)/max_backlight;
 
 	} else {
-
 		// fallback to read the current screen backlight value using dbus
 		// we prefer to avoid this because it forks gsd-backlight-helper
 		// from gnome-settings-daemon on each call.
