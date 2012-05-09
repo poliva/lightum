@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "2.0.4"
+#define VERSION "2.1"
 
 int reloadconfig=0;
 
