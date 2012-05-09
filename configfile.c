@@ -36,7 +36,7 @@ static const conf_data default_config = {
 	/* minbrightness */ 0,
 	/* polltime */ 300,
 	/* idleoff */ 5,
-	/* ignoreuser */ 1,
+	/* ignoreuser */ 0,
 	/* minbacklight */ 1,
 	/* maxbacklight */ 15,
 	/* screenidle */ 30,
