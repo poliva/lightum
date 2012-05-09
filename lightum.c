@@ -57,8 +57,7 @@ int main(int argc, char *argv[]) {
 	int light=0, brightness=255, backlight=100;
 	int foreground=0, verbose=0, debug=0;
 	int brightness_restore, backlight_restore, brightness_restoreflag=0, backlight_restoreflag=0;
-	int res;
-	int tmp;
+	int res, dbus_backend=-1, tmp=-1;
 	float idletime=0;
 	pid_t pid;
 	conf_data conf;
@@ -188,13 +187,26 @@ int main(int argc, char *argv[]) {
 	/* start with current brightness values */
 	if (conf.workmode == 1 || conf.workmode == 3) {
 		brightness_restore=get_keyboard_brightness_value();
-		brightness_prev=brightness_restore;
 	}
 
 	/* start with current backlight values */
 	if (conf.workmode == 2 || conf.workmode == 3) {
 		backlight_restore=get_screen_backlight_value();
-		backlight_prev=backlight_restore;
+
+		// detect dbus backend: 0: gnome, 1: kde
+		tmp = dbus_set_screen_backlight_value_gnome(backlight_restore);
+		if (tmp == -1) {
+			tmp = dbus_set_screen_backlight_value_kde(backlight_restore);
+			if (tmp == -1) {
+				fprintf (stderr, "Can't manage screen backlight on this system.\nPlease disable backlight with config option 'workmode='1' or command line switch '-w 1'.\nIf you believe this is an error, open a bug report: https://github.com/poliva/lightum/issues\n");
+				exit (-1);
+			} else {
+				dbus_backend=1;	
+			}
+
+		} else {
+			dbus_backend=0;
+		}
 	}
 
 	if (conf.idleoff != 0 || conf.screenidle != 0) {
@@ -374,7 +386,7 @@ int main(int argc, char *argv[]) {
 					backlight_restoreflag=1;
 				}
 				if (debug == 2 || debug == 3) printf ("-> set screen backlight: %d -> %d\n",backlight_prev,backlight);
-				backlight_fading(backlight_prev,backlight);
+				backlight_fading(backlight_prev, backlight, dbus_backend);
 				usleep(1500);
 				backlight=get_screen_backlight_value();
 				backlight_prev=backlight;
@@ -385,7 +397,7 @@ int main(int argc, char *argv[]) {
 					if (verbose) printf("-> Detected user backlight change, current backlight is set to %d\n", tmp);
 					if (conf.ignoreuser) {
 						if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
-						backlight_fading(tmp,backlight);
+						backlight_fading(tmp, backlight, dbus_backend);
 					}
 				}
 			}

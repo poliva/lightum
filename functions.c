@@ -142,7 +142,7 @@ int get_screen_backlight_value() {
 	}
 }
 
-int set_screen_backlight_value(int backlight) {
+int set_screen_backlight_value(int backlight, int backend) {
 	int value=100, ret=15;
 	if (backlight == 15) value=100;
 	else if (backlight == 14) value=96;
@@ -161,7 +161,7 @@ int set_screen_backlight_value(int backlight) {
 	else if (backlight == 1) value=8;
 	else if (backlight == 0) value=0;
 	//printf("\n SET_BACKLIGHT: %d\n", backlight);
-	ret = dbus_set_screen_backlight_value(value);
+	ret = dbus_set_screen_backlight_value(value, backend);
 	return ret;
 }
 
@@ -225,28 +225,28 @@ void fading(int from, int to) {
 	}
 }
 
-void backlight_fading(int from, int to) {
+void backlight_fading(int from, int to, int backend) {
 
 	int step;
 
 	if (from > to) {
 		step=(from-to)/4;
-		set_screen_backlight_value(from-step);
+		set_screen_backlight_value(from-step, backend);
 		usleep(100000);
-		set_screen_backlight_value(from-step*2);
+		set_screen_backlight_value(from-step*2, backend);
 		usleep(100000);
-		set_screen_backlight_value(from-step*3);
+		set_screen_backlight_value(from-step*3, backend);
 		usleep(100000);
-		set_screen_backlight_value(to);
+		set_screen_backlight_value(to, backend);
 	} else {
 		step=(to-from)/4;
-		set_screen_backlight_value(to-step*3);
+		set_screen_backlight_value(to-step*3, backend);
 		usleep(20000);
-		set_screen_backlight_value(to-step*2);
+		set_screen_backlight_value(to-step*2, backend);
 		usleep(20000);
-		set_screen_backlight_value(to-step);
+		set_screen_backlight_value(to-step, backend);
 		usleep(20000);
-		set_screen_backlight_value(to);
+		set_screen_backlight_value(to, backend);
 	}
 }
 

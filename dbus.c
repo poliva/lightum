@@ -376,21 +376,12 @@ int dbus_set_screen_backlight_value_kde(int backlight) {
 	return retval;
 }
 
-int dbus_set_screen_backlight_value(int backlight) {
+int dbus_set_screen_backlight_value(int backlight, int backend) {
 
 	int ret=-1;
 
-	ret = dbus_set_screen_backlight_value_gnome(backlight);
-	if (ret == -1) {
-		ret = dbus_set_screen_backlight_value_kde(backlight);
-		if (ret == -1) {
-			fprintf (stderr, "Can't manage screen backlight on this system.\nPlease disable backlight with config option 'workmode='1' or command line switch '-w 1'.\nIf you believe this is an error, open a bug report: https://github.com/poliva/lightum/issues\n");
-			exit (-1);
-		} else {
-			return ret;
-		}
-	} else {
-		return ret;
-	}
+	if (backend == 0) ret = dbus_set_screen_backlight_value_gnome(backlight); 
+	if (backend == 1) ret = dbus_set_screen_backlight_value_kde(backlight);
 
+	return ret;
 }
