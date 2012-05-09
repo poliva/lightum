@@ -332,6 +332,7 @@ int main(int argc, char *argv[]) {
 			if (brightness!=brightness_prev) {
 				if (!conf.manualmode) {
 					brightness_restore=get_keyboard_brightness_value();
+					if (brightness_restore < conf.minbrightness) brightness_restore=conf.minbrightness;
 					if (debug == 1 || debug == 3) printf("\ncurrent brightness: %d\n",brightness_restore);
 					if ((brightness_restore != brightness_prev) && (brightness_restoreflag)) {
 						if (!conf.ignoreuser) {
@@ -370,6 +371,7 @@ int main(int argc, char *argv[]) {
 			if (backlight!=backlight_prev) {
 				if (!conf.manualmode) {
 					backlight_restore=get_screen_backlight_value();
+					if (backlight_restore < conf.minbacklight) backlight_restore=conf.minbacklight;
 					if (debug == 2 || debug == 3) printf("\ncurrent backlight: %d\n",backlight_restore);
 					if ((backlight_restore != backlight_prev) && (backlight_restoreflag)) {
 						if (!conf.ignoreuser) {
