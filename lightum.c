@@ -66,6 +66,15 @@ int main(int argc, char *argv[]) {
         DBusGConnection *connection;
         DBusGProxy *proxy_manager;
         DBusGProxy *proxy_session;
+	uid_t uid, euid;
+
+	// make sure we are run as a regular user
+	uid = getuid();
+	euid = geteuid();
+	if (uid == 0 || euid == 0) {
+		fprintf(stderr, "lightum must NOT be run as root.\n");
+		exit(1);
+	}
 
 	// overwrite defaults with config file
 	conf = config_parse();
