@@ -318,13 +318,13 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (conf.workmode == 1 || conf.workmode == 3) {
-			if (debug == 1 || debug == 3) printf("maxbrightness: %d ",conf.maxbrightness);
 			if (verbose) printf("brightness: %d ",brightness);
+			if (debug == 1 || debug == 3) printf("/ %d ",conf.maxbrightness);
 		}
 
 		if (conf.workmode == 2 || conf.workmode == 3) {
-			if (debug == 2 || debug == 3) printf("maxbacklight: %d ",conf.maxbacklight);
 			if (verbose) printf("backlight: %d ",backlight);
+			if (debug == 2 || debug == 3) printf("/ %d ",conf.maxbacklight);
 		}
 
 		// keyboard brightness
