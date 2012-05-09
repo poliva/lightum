@@ -1,17 +1,19 @@
 lightum - MacBook automatic light sensor daemon
+===============================================
+
 (c)2011-2012 Pau Oliva Fora - pof[at]eslack(.)org
 
-lightum is a daemon to control the keyboard brightness and monitor backlight on
+lightum is a daemon to control the keyboard brightness and screen backlight on
 MacBook based laptops.
 
 By default it will run in "auto" mode, this means it will read data from the
 ambient light sensor (located on the iSight camera) and automatically:
 
-	a) light up or dim the keyboard brightness 
-	b) light up or dim the the video backlight 
+- light up or dim the keyboard brightness 
+- light up or dim the the video backlight 
 
 It will also dim the keyboard brightness and screen backlight when the computer
-is not used for a configurable amount of seconds (5 by default).
+is not used for a configurable amount of seconds.
 
 If you choose to run it in "manual" mode, it will not query the ambient light
 sensor, but instead it will use the brightness and backlight values you set
@@ -23,7 +25,7 @@ default configuration values. When launched without parameters, lightum will
 read the configuration from this config file, but the configuration values can
 be overwritten via the command line:
 
-Usage:  lightum [OPTION]...
+    Usage:  lightum [OPTION]...
      -m 4..255 : maximum brightness value in auto mode (default=255)
      -n 0..3   : minimum brightness value in auto mode (default=0)
      -M 4..15  : maximum backlight value in auto mode (default=15)
