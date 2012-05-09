@@ -315,13 +315,17 @@ int main(int argc, char *argv[]) {
 				if (debug == 1 || debug == 3) printf ("-> set keyboard brightness: %d -> %d\n",brightness_prev,brightness);
 				fading(brightness_prev,brightness);
 				usleep(1500);
+				brightness=get_keyboard_brightness_value();
 				brightness_prev=brightness;
 			}
 			if (!conf.manualmode) {
 				tmp=get_keyboard_brightness_value();
 				if (tmp!=brightness) {
-					if (debug == 1 || debug == 3) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
-					fading(tmp,brightness);
+					if (verbose) printf("-> Detected user brightness change, current brightness is set to %d\n", tmp);
+					if (conf.ignoreuser) {
+						if (debug == 1 || debug == 3) printf ("\n*** forcing brightness from %d to %d\n", tmp, brightness);
+						fading(tmp,brightness);
+					}
 				}
 			}
 		}
@@ -355,8 +359,11 @@ int main(int argc, char *argv[]) {
 			if (!conf.manualmode) {
 				tmp=get_screen_backlight_value();
 				if (tmp!=backlight) {
-					if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
-					backlight_fading(tmp,backlight);
+					if (verbose) printf("-> Detected user backlight change, current backlight is set to %d\n", tmp);
+					if (conf.ignoreuser) {
+						if (debug == 2 || debug == 3) printf ("\n*** forcing backlight from %d to %d\n", tmp, backlight);
+						backlight_fading(tmp,backlight);
+					}
 				}
 			}
 		}
