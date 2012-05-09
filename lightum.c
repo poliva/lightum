@@ -27,6 +27,8 @@
 
 #define VERSION "2.0.4"
 
+int reloadconfig=0;
+
 void usage(const char *error) {
 	fprintf(stderr, "lightum v%s - (c)2011 Pau Oliva Fora <pof@eslack.org>\n",VERSION);
 	fprintf(stderr, "%s",error);
@@ -197,6 +199,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	while(1) {
+
+		if (reloadconfig) {
+			conf = config_parse();
+			if (verbose) printf("lightum: SIGUSR1 received, configuration reloaded\n");
+			reloadconfig=0;
+		}
 
 		if (!conf.ignoresession) {
 			if (! get_session_active(proxy_session) ) {

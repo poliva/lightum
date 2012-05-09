@@ -20,6 +20,8 @@
 
 #include "lightum.h"
 
+extern int reloadconfig;
+
 int get_keyboard_brightness_value() {
 
 	int fd;
@@ -267,6 +269,12 @@ void signal_handler(int sig) {
 	exit(1);
 }
 
+void config_reload(int sig) {
+
+	(void) sig;
+	reloadconfig=1;
+}
+
 void signal_installer() {
 
 	signal(SIGINT, signal_handler);
@@ -275,4 +283,5 @@ void signal_installer() {
 	signal(SIGQUIT, signal_handler);
 	signal(SIGCHLD, signal_handler);
 	signal(SIGABRT, signal_handler);
+	signal(SIGUSR1, config_reload);
 }
