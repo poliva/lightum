@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
 
 		if (!conf.ignoresession) {
 			if (! get_session_active(proxy_session) ) {
-				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
+				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\nIf you believe this is an error, try running lightum with 'ignoresession=1' or '-U' command line switch.\n", conf.polltime);
 				usleep(conf.polltime*1000);
 				continue;
 			}
