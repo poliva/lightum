@@ -185,10 +185,16 @@ int main(int argc, char *argv[]) {
 		printf("forked into background\n");
 	} else printf("\n");
 
-	/* in manual mode, start with current brightness value */
-	if (conf.manualmode) {
-		if (conf.workmode == 1 || conf.workmode == 3) brightness_restore=get_keyboard_brightness_value();
-		if (conf.workmode == 2 || conf.workmode == 3) backlight_restore=get_screen_backlight_value();
+	/* start with current brightness values */
+	if (conf.workmode == 1 || conf.workmode == 3) {
+		brightness_restore=get_keyboard_brightness_value();
+		brightness_prev=brightness_restore;
+	}
+
+	/* start with current backlight values */
+	if (conf.workmode == 2 || conf.workmode == 3) {
+		backlight_restore=get_screen_backlight_value();
+		backlight_prev=backlight_restore;
 	}
 
 	if (conf.idleoff != 0 || conf.screenidle != 0) {
