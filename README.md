@@ -1,9 +1,10 @@
 lightum - MacBook automatic light sensor daemon
 ===============================================
 
-(c)2011-2012 Pau Oliva Fora - pof[at]eslack(.)org
+&copy; 2011-2012 Pau Oliva Fora - pof[at]eslack(.)org
 
-lightum is a daemon to control the keyboard brightness and screen backlight on
+
+Lightum is a daemon to control the keyboard brightness and screen backlight on
 MacBook based laptops.
 
 By default it will run in "auto" mode, this means it will read data from the
@@ -19,11 +20,17 @@ If you choose to run it in "manual" mode, it will not query the ambient light
 sensor, but instead it will use the brightness and backlight values you set
 manually using the function keys.
 
-When first launched lightum will create a configuration file in the folder
-~/.config/lightum/lightum.conf, inside the user's home directory with the
-default configuration values. When launched without parameters, lightum will
-read the configuration from this config file, but the configuration values can
-be overwritten via the command line:
+
+Configuration
+-------------
+
+When first launched lightum will create a configuration file inside the user's
+home directory with the default configuration values:
+
+    ~/.config/lightum/lightum.conf
+
+When launched without parameters, lightum will read the configuration from this
+config file, but the configuration values can be overwritten via the command line:
 
     Usage:  lightum [OPTION]...
      -m 4..255 : maximum brightness value in auto mode (default=255)
@@ -42,10 +49,22 @@ be overwritten via the command line:
      -d num    : debug mode: 1 brightness, 2 backlight, 3 both
 
 
+
+Ubuntu packages
+---------------
+
 Official Ubuntu packages are available in poliva/lightum-mba ppa:
 
      sudo add-apt-repository ppa:poliva/lightum-mba
      sudo apt-get update
      sudo apt-get install lightum
+     
+
+
+Indicator applet
+----------------
+An [indicator applet](https://github.com/poliva/lightum-indicator) is also available
+to contro lightum from your desktop pannel.
+
 
 Enjoy! :)
