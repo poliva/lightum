@@ -13,6 +13,7 @@ typedef struct {
 	int maxbacklight;
 	int screenidle;
 	int workmode;
+	int ignoresession;
 } conf_data;
 
 /* configfile.c */

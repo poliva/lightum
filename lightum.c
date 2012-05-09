@@ -41,6 +41,7 @@ void usage(const char *error) {
 	fprintf(stderr, "     -w num    : 1 manage brightness, 2 manage backlight, 3 both (default:3)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
 	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
+	fprintf(stderr, "     -U        : ignore session information from ConsoleKit\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
 	fprintf(stderr, "     -f        : run in foreground (do not daemonize)\n");
 	fprintf(stderr, "     -v        : verbose mode, useful for debugging with -f and -d\n");
@@ -68,7 +69,7 @@ int main(int argc, char *argv[]) {
 	conf = config_parse();
 
 	// overwrite config file with command line arguments
-	while ((c = getopt(argc, argv, "hxusvfm:n:M:N:p:I:i:d:w:?")) != EOF) {
+	while ((c = getopt(argc, argv, "hxuUsvfm:n:M:N:p:I:i:d:w:?")) != EOF) {
 		switch(c) {
 			case 'h':
 				usage("");
@@ -78,6 +79,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'u':
 				conf.ignoreuser=0;
+				break;
+			case 'U':
+				conf.ignoresession=1;
 				break;
 			case 's':
 				conf.queryscreensaver=1;
@@ -123,6 +127,7 @@ int main(int argc, char *argv[]) {
 
 	if (verbose) printf("CONFIG:\n\tmanualmode: %d\n",conf.manualmode);
 	if (verbose) printf("\tignoreuser: %d\n",conf.ignoreuser);
+	if (verbose) printf("\tignoresession: %d\n",conf.ignoresession);
 	if (verbose) printf("\tworkmode: %d\n",conf.workmode);
 	if (verbose) printf("\tqueryscreensaver: %d\n",conf.queryscreensaver);
 	if (verbose) printf("\tmaxbrightness: %d\n",conf.maxbrightness);
@@ -136,6 +141,7 @@ int main(int argc, char *argv[]) {
 	// make sure all config values are correct
 	if (conf.manualmode < 0 || conf.manualmode > 1) usage("ERROR: Wrong value in config variable 'manualmode'\n");
 	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage("ERROR: Wrong value in config variable 'ignoreuser'\n");
+	if (conf.ignoresession < 0 || conf.ignoresession > 1) usage("ERROR: Wrong value in config variable 'ignoresession'\n");
 	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage("ERROR: Wrong value in config variable 'queryscreensaver'\n");
 	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage("ERROR: Wrong value in config variable 'maxbrightness'\n");
 	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage("ERROR: Wrong value in config variable 'minbrightness'\n");
@@ -184,16 +190,20 @@ int main(int argc, char *argv[]) {
 
 	signal_installer();
 
-        connection = get_dbus_connection();
-	proxy_manager = get_dbus_proxy_manager(connection);
-	proxy_session = get_dbus_proxy_session(connection, proxy_manager);
+	if (!conf.ignoresession) {
+		connection = get_dbus_connection();
+		proxy_manager = get_dbus_proxy_manager(connection);
+		proxy_session = get_dbus_proxy_session(connection, proxy_manager);
+	}
 
 	while(1) {
 
-		if (! get_session_active(proxy_session) ) {
-			if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
-			usleep(conf.polltime*1000);
-			continue;
+		if (!conf.ignoresession) {
+			if (! get_session_active(proxy_session) ) {
+				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\n", conf.polltime);
+				usleep(conf.polltime*1000);
+				continue;
+			}
 		}
 
 		if (!conf.manualmode) {

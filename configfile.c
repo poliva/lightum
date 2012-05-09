@@ -41,6 +41,7 @@ static const conf_data default_config = {
 	/* maxbacklight */ 15,
 	/* screenidle */ 30,
 	/* workmode */ 3,
+	/* ignoresession */ 0,
 };
 
 int file_exists(char* file) {
@@ -98,6 +99,10 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = ignore brightness changess happening outside lightum and keep the\n");
 	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
 	fprintf(fd, "ignoreuser=%d\n\n", default_config.ignoreuser);
+	fprintf(fd, "# ignoresession: check if current user has X session active\n");
+	fprintf(fd, "#   0 = useful if you don't use ConsoleKit on your X server\n");
+	fprintf(fd, "#   1 = useful if you are on a multi-user X server (default)\n");
+	fprintf(fd, "ignoresession=%d\n\n", default_config.ignoresession);
 	fprintf(fd, "# workmode\n");
 	fprintf(fd, "#   1 = only manage keyboard brightness (ignore screen backlight)\n");
 	fprintf(fd, "#   2 = only manage screen backlight (ignore keyboard brightness)\n");
@@ -226,6 +231,14 @@ conf_data config_parse() {
 			temp[len+1]='\0';
 			config.workmode = atoi(temp);
 		}
+
+		if ((strncmp ("ignoresession=", input, 14)) == 0) {
+			strncpy (temp, input + 14,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.ignoresession = atoi(temp);
+		}
+
 	}
 
 	free(file);
