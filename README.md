@@ -52,8 +52,7 @@ config file, but the configuration values can be overwritten via the command lin
 
 Ubuntu packages
 ---------------
-
-Official Ubuntu packages are available in poliva/lightum-mba ppa:
+Official Ubuntu packages are available in [poliva/lightum-mba ppa](https://launchpad.net/~poliva/+archive/lightum-mba):
 
      sudo add-apt-repository ppa:poliva/lightum-mba
      sudo apt-get update
