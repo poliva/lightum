@@ -63,7 +63,7 @@ Official Ubuntu packages are available in [poliva/lightum-mba ppa](https://launc
 Indicator applet
 ----------------
 An [indicator applet](https://github.com/poliva/lightum-indicator) is also available
-to contro lightum from your desktop pannel.
+to contro lightum from your desktop panel.
 
 
 Enjoy! :)
