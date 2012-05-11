@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
 			tmp = dbus_set_screen_backlight_value_kde(acpi_to_dbus_backlight(backlight_restore));
 			if (tmp == -1) {
 				fprintf (stderr, "Can't manage screen backlight on this system.\nPlease disable backlight with config option 'workmode='1' or command line switch '-w 1'.\nIf you believe this is an error, open a bug report: https://github.com/poliva/lightum/issues\n");
-				exit (-1);
+				exit (1);
 			} else {
 				dbus_backend=1;	
 			}
@@ -224,7 +224,7 @@ int main(int argc, char *argv[]) {
 	if (conf.idleoff != 0 || conf.screenidle != 0) {
 		display = XOpenDisplay(NULL);
 		if (display == NULL) {
-			printf("Failed to open display\n");
+			fprintf(stderr,"Failed to open display\n");
 			exit(1);
 		}
 	}
@@ -443,7 +443,8 @@ int main(int argc, char *argv[]) {
 		usleep(conf.polltime*1000);
 	}
 
+	// we should never reach here.
 	//if (conf.idleoff != 0) XCloseDisplay(display);
 	//dbus_g_connection_unref(connection);
-	exit(0);
+	exit(1);
 }

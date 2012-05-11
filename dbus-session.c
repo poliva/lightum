@@ -81,9 +81,10 @@ DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *prox
                                            ssid,
                                            CK_SESSION_INTERFACE);
 
-        if (proxy == NULL) 
-                exit(1);
-
+        if (proxy == NULL) {
+		g_warning ("Could not get dbus session proxy");
+                exit (1);
+	}
 
 	return proxy;
 
@@ -98,8 +99,10 @@ DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection)
                                            CK_NAME,
                                            CK_MANAGER_PATH,
                                            CK_MANAGER_INTERFACE);
-        if (proxy == NULL) 
-                exit(1);
+        if (proxy == NULL) {
+		g_warning ("Could not get dbus manager proxy");
+                exit (1);
+	}
 
 	return proxy;
 
@@ -131,7 +134,7 @@ DBusGConnection* get_dbus_connection()
         if (connection == NULL) {
                 g_message ("Failed to connect to the D-Bus daemon: %s", error->message);
                 g_error_free (error);
-                exit(1);
+                exit (1);
         }
 
 	return connection;

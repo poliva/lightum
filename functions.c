@@ -342,7 +342,7 @@ int create_pid_file() {
 
 		fd = open(pidfile, O_RDONLY);
 		if (fd < 0) {
-			printf ("Could not open pid file: %s\n", pidfile);
+			fprintf (stderr,"Could not open pid file: %s\n", pidfile);
 			return FALSE;
 		}
 		cnt=read(fd, buf, sizeof(buf)-1);
@@ -358,7 +358,7 @@ int create_pid_file() {
 		if (file_exists(procpid)) {
 			fd = open(procpid, O_RDONLY);
 			if (fd < 0) {
-				printf ("Could not open file: %s\n", procpid);
+				fprintf (stderr,"Could not open file: %s\n", procpid);
 				return FALSE;
 			}
 
@@ -368,7 +368,7 @@ int create_pid_file() {
 			close(fd);
 
 			if (strstr(buf,"lightum") != NULL) {
-				printf("Refusing to start as lightum is already running\n");
+				fprintf (stderr,"Refusing to start as lightum is already running\n");
 				return FALSE;
 			} else {
 				if (!remove_pid_file()) 
@@ -379,7 +379,7 @@ int create_pid_file() {
 
 	fd = open(pidfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0 ) {
-		printf("Could not write pid file: %s\n", pidfile);
+		fprintf(stderr,"Could not write pid file: %s\n", pidfile);
 		return FALSE;
 	}
 
@@ -403,12 +403,12 @@ int remove_pid_file() {
 	pidfile = default_pid_file();
 
 	if (!file_exists(pidfile)) {
-		printf("pid file does not exist: %s\n", pidfile);
+		fprintf (stderr,"pid file does not exist: %s\n", pidfile);
 		return TRUE;
 	}
 
 	if (unlink(pidfile) != 0) {
-		printf("Could not delete pid file: %s\n", pidfile);
+		fprintf (stderr,"Could not delete pid file: %s\n", pidfile);
 		return FALSE;
 	}
 	return TRUE;

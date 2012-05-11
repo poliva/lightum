@@ -131,14 +131,14 @@ conf_data config_parse() {
 	file = default_config_file();
 	if (!file_exists(file)) {
 		if (!create_config_file(file)) {
-			printf ("failed to create default config file: %s\n", file);
-			exit(1);
+			fprintf (stderr,"Failed to create default config file: %s\n", file);
+			exit (1);
 		}
 	}
 
 	fd = fopen (file, "r");
 	if (fd == NULL) {
-		printf ("Could not open configuration file: %s\n", file);
+		fprintf (stderr,"Could not open configuration file: %s\n", file);
 		exit (1);
 	}
 
