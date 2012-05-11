@@ -122,25 +122,32 @@ int get_screen_backlight_value() {
 		// from gnome-settings-daemon on each call.
 
 		backlight = dbus_get_screen_backlight_value();
-		if (backlight < 6 ) ret=0;
-		else if (backlight < 13) ret=1;
-		else if (backlight < 20) ret=2;
-		else if (backlight < 26) ret=3;
-		else if (backlight < 33) ret=4;
-		else if (backlight < 40) ret=5;
-		else if (backlight < 46) ret=6;
-		else if (backlight < 53) ret=7;
-		else if (backlight < 60) ret=8;
-		else if (backlight < 66) ret=9;
-		else if (backlight < 73) ret=10;
-		else if (backlight < 80) ret=11;
-		else if (backlight < 86) ret=12;
-		else if (backlight < 93) ret=13;
-		else if (backlight < 100) ret=14;
-		else if (backlight == 100) ret=15;
+		ret = dbus_to_acpi_backlight(backlight);
 		return ret;
 
 	}
+}
+
+int dbus_to_acpi_backlight(int backlight) {
+
+	int value=15;
+	if (backlight < 6 ) value=0;
+	else if (backlight < 13) value=1;
+	else if (backlight < 20) value=2;
+	else if (backlight < 26) value=3;
+	else if (backlight < 33) value=4;
+	else if (backlight < 40) value=5;
+	else if (backlight < 46) value=6;
+	else if (backlight < 53) value=7;
+	else if (backlight < 60) value=8;
+	else if (backlight < 66) value=9;
+	else if (backlight < 73) value=10;
+	else if (backlight < 80) value=11;
+	else if (backlight < 86) value=12;
+	else if (backlight < 93) value=13;
+	else if (backlight < 100) value=14;
+	else if (backlight == 100) value=15;
+	return value;
 }
 
 int acpi_to_dbus_backlight(int backlight) {
