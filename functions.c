@@ -143,8 +143,9 @@ int get_screen_backlight_value() {
 	}
 }
 
-int set_screen_backlight_value(int backlight, int backend) {
-	int value=100, ret=15;
+int acpi_to_dbus_backlight(int backlight) {
+
+	int value=100;
 	if (backlight == 15) value=100;
 	else if (backlight == 14) value=96;
 	else if (backlight == 13) value=88;
@@ -161,8 +162,16 @@ int set_screen_backlight_value(int backlight, int backend) {
 	else if (backlight == 2) value=15;
 	else if (backlight == 1) value=8;
 	else if (backlight == 0) value=0;
-	//printf("\n SET_BACKLIGHT: %d\n", backlight);
+	return value;
+}
+
+int set_screen_backlight_value(int backlight, int backend) {
+
+	int value, ret;
+
+	value = acpi_to_dbus_backlight(backlight);
 	ret = dbus_set_screen_backlight_value(value, backend);
+
 	return ret;
 }
 
@@ -205,6 +214,9 @@ void fading(int from, int to) {
 
 	int step;
 
+	if (from == -1)
+		from = get_keyboard_brightness_value();
+
 	if (from > to) {
 		step=(from-to)/4;
 		set_keyboard_brightness_value(from-step);
@@ -229,6 +241,9 @@ void fading(int from, int to) {
 void backlight_fading(int from, int to, int backend) {
 
 	int step;
+
+	if (from == -1)
+		from = get_screen_backlight_value();
 
 	if (from > to) {
 		step=(from-to)/4;

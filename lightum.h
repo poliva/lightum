@@ -39,6 +39,7 @@ int create_config_dir(char* path);
 int get_keyboard_brightness_value();
 int get_light_sensor_value();
 int get_screen_backlight_value();
+int acpi_to_dbus_backlight(int backlight);
 int set_screen_backlight_value(int backlight, int backend);
 int calculate_keyboard_brightness_value(int light, int maxlight, int minlight);
 int calculate_screen_backlight_value(int light, int maxlight, int minlight);

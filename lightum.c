@@ -202,9 +202,9 @@ int main(int argc, char *argv[]) {
 		backlight_restore=get_screen_backlight_value();
 
 		// detect dbus backend: 0: gnome, 1: kde
-		tmp = dbus_set_screen_backlight_value_gnome(backlight_restore);
+		tmp = dbus_set_screen_backlight_value_gnome(acpi_to_dbus_backlight(backlight_restore));
 		if (tmp == -1) {
-			tmp = dbus_set_screen_backlight_value_kde(backlight_restore);
+			tmp = dbus_set_screen_backlight_value_kde(acpi_to_dbus_backlight(backlight_restore));
 			if (tmp == -1) {
 				fprintf (stderr, "Can't manage screen backlight on this system.\nPlease disable backlight with config option 'workmode='1' or command line switch '-w 1'.\nIf you believe this is an error, open a bug report: https://github.com/poliva/lightum/issues\n");
 				exit (-1);
