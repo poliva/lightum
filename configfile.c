@@ -16,17 +16,6 @@
 
 #include "lightum.h"
 
-#define CONFIG_PATH ".config/lightum/"
-#define CONFIG_FILE "lightum.conf"
-
-#ifndef FALSE
-#define FALSE   (0)
-#endif
-
-#ifndef TRUE
-#define TRUE    (!FALSE)
-#endif
-
 #define MAXLEN 80
 
 static const conf_data default_config = {

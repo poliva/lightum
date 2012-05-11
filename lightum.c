@@ -184,6 +184,9 @@ int main(int argc, char *argv[]) {
 		printf("forked into background\n");
 	} else printf("\n");
 
+	/* create pid file */
+	if (!create_pid_file()) exit(1);
+
 	/* start with current brightness values */
 	if (conf.workmode == 1 || conf.workmode == 3) {
 		brightness_restore=get_keyboard_brightness_value();

@@ -1,5 +1,18 @@
 #include <X11/Xlib.h>
 #include <dbus/dbus-glib-lowlevel.h>
+
+#define CONFIG_PATH ".config/lightum/"
+#define CONFIG_FILE "lightum.conf"
+#define PID_FILE "lightum.pid"
+
+#ifndef FALSE
+#define FALSE   (0)
+#endif
+
+#ifndef TRUE
+#define TRUE    (!FALSE)
+#endif
+
 /* config file */
 typedef struct {
 	int manualmode;
@@ -18,6 +31,9 @@ typedef struct {
 
 /* configfile.c */
 conf_data config_parse();
+int file_exists(char* file);
+char* default_config_dir();
+int create_config_dir(char* path);
 
 /* functions.c */
 int get_keyboard_brightness_value();
@@ -30,6 +46,8 @@ void fading(int from, int to);
 void backlight_fading(int from, int to, int backend);
 float get_session_idle_time(Display *display);
 void signal_installer();
+int remove_pid_file();
+int create_pid_file();
 
 /* dbus.c */
 int get_screensaver_active();

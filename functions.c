@@ -17,6 +17,7 @@
 #include <X11/extensions/scrnsaver.h>
 #include <signal.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include "lightum.h"
 
@@ -265,6 +266,7 @@ void signal_handler(int sig) {
 
 	(void) sig;
 	set_keyboard_brightness_value(0);
+	remove_pid_file();
 	printf("Killed!\n");
 	exit(1);
 }
@@ -284,4 +286,108 @@ void signal_installer() {
 	signal(SIGCHLD, signal_handler);
 	signal(SIGABRT, signal_handler);
 	signal(SIGUSR1, config_reload);
+}
+
+char* default_pid_file() {
+	char* home = getenv("HOME");
+	char* file = malloc(strlen(home) + strlen(CONFIG_PATH) + strlen(PID_FILE) + 2);
+	strcpy(file, "");
+	strcat(file, home);
+	strcat(file, "/");
+	strcat(file, CONFIG_PATH);
+	strcat(file, PID_FILE);
+	return file;
+}
+
+int create_pid_file() {
+
+	int fd;
+	char *path, *pidfile;
+	char buf[100];
+	ssize_t cnt;
+	char* procpid = malloc( sizeof(buf) + 15 );
+
+	path = default_config_dir();
+	create_config_dir(path);
+
+	pidfile = default_pid_file();
+
+	if (file_exists(pidfile)) {
+
+		// check if /proc/{pid}/cmdline exists and contains lightum
+		// if it does, means lightum is already running, so we exit cowardly
+		// if it does not contain lightum, then we remove the old pid file and continue
+
+		fd = open(pidfile, O_RDONLY);
+		if (fd < 0) {
+			printf ("Could not open pid file: %s\n", pidfile);
+			return FALSE;
+		}
+		cnt=read(fd, buf, sizeof(buf)-1);
+		buf[cnt]='\0';
+		
+		close(fd);
+
+		strcpy(procpid, "");
+		strcat(procpid, "/proc/");
+		strcat(procpid, buf);
+		strcat(procpid, "/cmdline");
+
+		if (file_exists(procpid)) {
+			fd = open(procpid, O_RDONLY);
+			if (fd < 0) {
+				printf ("Could not open file: %s\n", procpid);
+				return FALSE;
+			}
+
+			cnt=read(fd, buf, sizeof(buf)-1);
+			buf[cnt]='\0';
+			
+			close(fd);
+
+			if (strstr(buf,"lightum") != NULL) {
+				printf("Refusing to start as lightum is already running\n");
+				return FALSE;
+			} else {
+				if (!remove_pid_file()) 
+					return FALSE;
+			}
+		}
+	}
+
+	fd = open(pidfile, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	if (fd < 0 ) {
+		printf("Could not write pid file: %s\n", pidfile);
+		return FALSE;
+	}
+
+	sprintf( buf, "%d", getpid() );
+	if (write(fd, buf, strlen(buf)) < 1) {
+		perror("Something wrong happening while writing pid file");
+		close(fd);
+		return FALSE;
+	}
+	close(fd);
+
+	free(procpid);
+
+	return TRUE;
+}
+
+int remove_pid_file() {
+
+	char *pidfile;
+
+	pidfile = default_pid_file();
+
+	if (!file_exists(pidfile)) {
+		printf("pid file does not exist: %s\n", pidfile);
+		return TRUE;
+	}
+
+	if (unlink(pidfile) != 0) {
+		printf("Could not delete pid file: %s\n", pidfile);
+		return FALSE;
+	}
+	return TRUE;
 }
