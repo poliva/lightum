@@ -355,7 +355,7 @@ int create_pid_file() {
 		}
 	}
 
-	fd = open(pidfile, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	fd = open(pidfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0 ) {
 		printf("Could not write pid file: %s\n", pidfile);
 		return FALSE;
