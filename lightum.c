@@ -27,6 +27,8 @@
 
 #define VERSION "2.1"
 
+#define MAXLV	6
+
 int reloadconfig=0;
 
 void usage(const char *error) {
@@ -66,6 +68,9 @@ int main(int argc, char *argv[]) {
         DBusGProxy *proxy_manager;
         DBusGProxy *proxy_session;
 	uid_t uid, euid;
+
+	int lightvalues[MAXLV];
+	unsigned int i,sum,index=0;
 
 	// make sure we are run as a regular user
 	uid = getuid();
@@ -228,6 +233,16 @@ int main(int argc, char *argv[]) {
 		proxy_session = get_dbus_proxy_session(connection, proxy_manager);
 	}
 
+	// initialize the light values array
+	if (!conf.manualmode) {
+		light=get_light_sensor_value();
+		for (i=0; i<MAXLV; i++) 
+			lightvalues[i]=light;
+	} else {
+		for (i=0; i<MAXLV; i++) 
+			lightvalues[i]=0;
+	}
+
 	while(1) {
 
 		if (reloadconfig) {
@@ -238,7 +253,7 @@ int main(int argc, char *argv[]) {
 
 		if (!conf.ignoresession) {
 			if (! get_session_active(proxy_session) ) {
-				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\nIf you believe this is an error, try running lightum with 'ignoresession=1' or '-U' command line switch.\n", conf.polltime);
+				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\nIf you believe this is an error, try running lightum with 'ignoresession=0' or '-U' command line switch.\n", conf.polltime);
 				usleep(conf.polltime*1000);
 				continue;
 			}
@@ -247,6 +262,16 @@ int main(int argc, char *argv[]) {
 		if (!conf.manualmode) {
 			light=get_light_sensor_value();
 			if (verbose) printf("light_sensor: %d ",light);
+			// to avoid backlight flickering when the light sensor flaps too fequently
+			// between two values, we collect lighting values and average them
+			if (index == MAXLV) index=0;
+			lightvalues[index] = light;
+			sum=0;
+			for (i=0; i<MAXLV; i++)
+				sum=lightvalues[i]+sum;
+			light=sum/MAXLV;
+			if (verbose) printf("light_avg: %d ",light);
+			index++;
 		}
 
 		if (conf.idleoff != 0 || conf.screenidle != 0) {
