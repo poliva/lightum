@@ -53,6 +53,21 @@ void usage(const char *error) {
 	exit(1);
 }
 
+void check_config_values(conf_data conf) {
+	if (conf.manualmode < 0 || conf.manualmode > 1) usage("ERROR: Wrong value in config variable 'manualmode'\n");
+	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage("ERROR: Wrong value in config variable 'ignoreuser'\n");
+	if (conf.ignoresession < 0 || conf.ignoresession > 1) usage("ERROR: Wrong value in config variable 'ignoresession'\n");
+	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage("ERROR: Wrong value in config variable 'queryscreensaver'\n");
+	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage("ERROR: Wrong value in config variable 'maxbrightness'\n");
+	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage("ERROR: Wrong value in config variable 'minbrightness'\n");
+	if (conf.maxbacklight < 4 || conf.maxbacklight > 15) usage("ERROR: Wrong value in config variable 'maxbacklight'\n");
+	if (conf.minbacklight < 1 || conf.minbacklight > 3) usage("ERROR: Wrong value in config variable 'minbacklight'\n");
+	if (conf.polltime < 1 || conf.polltime > 100000) usage("ERROR: Wrong value in config variable 'polltime'\n");
+	if (conf.idleoff < 0 || conf.idleoff > 86400) usage("ERROR: Wrong value in config variable 'idleoff'\n");
+	if (conf.screenidle < 0 || conf.screenidle > 86400) usage("ERROR: Wrong value in config variable 'screenidle'\n");
+	if (conf.workmode < 1 || conf.workmode > 3) usage("ERROR: Wrong value in config variable 'workmode'\n");
+}
+
 int main(int argc, char *argv[]) {
 
 	int screensaver=0, c, brightness_prev=-1, backlight_prev=-1;
@@ -154,18 +169,7 @@ int main(int argc, char *argv[]) {
 	if (verbose) printf("\tscreenidle: %d\n\n",conf.screenidle);
 
 	// make sure all config values are correct
-	if (conf.manualmode < 0 || conf.manualmode > 1) usage("ERROR: Wrong value in config variable 'manualmode'\n");
-	if (conf.ignoreuser < 0 || conf.ignoreuser > 1) usage("ERROR: Wrong value in config variable 'ignoreuser'\n");
-	if (conf.ignoresession < 0 || conf.ignoresession > 1) usage("ERROR: Wrong value in config variable 'ignoresession'\n");
-	if (conf.queryscreensaver < 0 || conf.queryscreensaver > 1) usage("ERROR: Wrong value in config variable 'queryscreensaver'\n");
-	if (conf.maxbrightness < 4 || conf.maxbrightness > 255) usage("ERROR: Wrong value in config variable 'maxbrightness'\n");
-	if (conf.minbrightness < 0 || conf.minbrightness > 3) usage("ERROR: Wrong value in config variable 'minbrightness'\n");
-	if (conf.maxbacklight < 4 || conf.maxbacklight > 15) usage("ERROR: Wrong value in config variable 'maxbacklight'\n");
-	if (conf.minbacklight < 1 || conf.minbacklight > 3) usage("ERROR: Wrong value in config variable 'minbacklight'\n");
-	if (conf.polltime < 1 || conf.polltime > 100000) usage("ERROR: Wrong value in config variable 'polltime'\n");
-	if (conf.idleoff < 0 || conf.idleoff > 86400) usage("ERROR: Wrong value in config variable 'idleoff'\n");
-	if (conf.screenidle < 0 || conf.screenidle > 86400) usage("ERROR: Wrong value in config variable 'screenidle'\n");
-	if (conf.workmode < 1 || conf.workmode > 3) usage("ERROR: Wrong value in config variable 'workmode'\n");
+	check_config_values(conf);
 	if (debug < 0 || debug > 3) usage("ERROR: Wrong value in config variable 'debug'\n");
 
 	// if debug enabled, force verbose mode too
@@ -248,6 +252,7 @@ int main(int argc, char *argv[]) {
 		if (reloadconfig) {
 			conf = config_parse();
 			if (verbose) printf("lightum: SIGUSR1 received, configuration reloaded\n");
+			check_config_values(conf);
 			reloadconfig=0;
 		}
 
