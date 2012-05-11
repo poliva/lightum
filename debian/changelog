@@ -1,3 +1,9 @@
+lightum (2.1.1-ubuntu1) precise; urgency=low
+
+  * updated to version 2.1.1
+
+ -- Pau Oliva Fora (pof) <pau@eslack.org>  Fri, 11 May 2012 20:11:02 +0200
+
 lightum (2.1-ubuntu1) precise; urgency=low
 
   * updated to version 2.1
