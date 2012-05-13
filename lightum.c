@@ -25,7 +25,7 @@
 
 #include "lightum.h"
 
-#define VERSION "2.1.1"
+#define VERSION "2.2"
 
 #define MAXLV	15
 
