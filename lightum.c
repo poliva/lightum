@@ -27,7 +27,7 @@
 
 #define VERSION "2.1.1"
 
-#define MAXLV	6
+#define MAXLV	15
 
 int reloadconfig=0;
 
@@ -83,9 +83,10 @@ int main(int argc, char *argv[]) {
         DBusGProxy *proxy_manager;
         DBusGProxy *proxy_session;
 	uid_t uid, euid;
-
-	int lightvalues[MAXLV];
-	unsigned int i,sum,index=0;
+	int light_aux=-1, light_avg=-1;
+	int lightvalues[MAXLV] = {0};
+	int countarray[255] = {0};
+	unsigned int i,index=0;
 
 	// make sure we are run as a regular user
 	uid = getuid();
@@ -242,10 +243,7 @@ int main(int argc, char *argv[]) {
 		light=get_light_sensor_value();
 		for (i=0; i<MAXLV; i++) 
 			lightvalues[i]=light;
-	} else {
-		for (i=0; i<MAXLV; i++) 
-			lightvalues[i]=0;
-	}
+	} 
 
 	while(1) {
 
@@ -267,14 +265,31 @@ int main(int argc, char *argv[]) {
 		if (!conf.manualmode) {
 			light=get_light_sensor_value();
 			if (verbose) printf("light_sensor: %d ",light);
+
 			// to avoid backlight flickering when the light sensor flaps too fequently
-			// between two values, we collect lighting values and average them
+			// between two values, we collect lighting values and use the most common
+			// value of the collected values
+
 			if (index == MAXLV) index=0;
 			lightvalues[index] = light;
-			sum=0;
-			for (i=0; i<MAXLV; i++)
-				sum=lightvalues[i]+sum;
-			light=sum/MAXLV;
+
+			// get the most repetitive value of lightvalues array
+			for (i = 0; i < MAXLV; i++) {
+				countarray[lightvalues[i]]++;
+			}
+
+			light_avg=-1;
+			light_aux=-1;
+			for (i = 0; i < 256; i ++) {
+				if(countarray[i] > light_aux) {
+					light_aux = countarray[i];
+					light_avg=i;
+				}
+				countarray[i]=0;
+			}
+
+			light=light_avg;
+
 			if (verbose) printf("light_avg: %d ",light);
 			index++;
 		}
