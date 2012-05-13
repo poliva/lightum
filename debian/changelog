@@ -1,3 +1,10 @@
+lightum (2.2-ubuntu1) precise; urgency=low
+
+  * updated to version 2.2
+  * added libc6-dev build time dependancy for math.h
+
+ -- Pau Oliva Fora (pof) <pau@eslack.org>  Sun, 13 May 2012 16:50:49 +0200
+
 lightum (2.1.1-ubuntu1) precise; urgency=low
 
   * updated to version 2.1.1
