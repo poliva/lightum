@@ -43,7 +43,7 @@ int dbus_to_acpi_backlight(int backlight);
 int acpi_to_dbus_backlight(int backlight);
 int set_screen_backlight_value(int backlight, int backend);
 int calculate_keyboard_brightness_value(int light, int maxlight, int minlight);
-int calculate_screen_backlight_value(int light, int maxlight, int minlight);
+int calculate_screen_backlight_value(int light, int maxbacklight, int minbacklight);
 void fading(int from, int to);
 void backlight_fading(int from, int to, int backend);
 float get_session_idle_time(Display *display);
