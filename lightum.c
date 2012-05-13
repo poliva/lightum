@@ -239,11 +239,17 @@ int main(int argc, char *argv[]) {
 	}
 
 	// initialize the light values array
+	for (i=0;i<256;i++)
+		countarray[i]=0;
 	if (!conf.manualmode) {
 		light=get_light_sensor_value();
 		for (i=0; i<MAXLV; i++) 
 			lightvalues[i]=light;
-	} 
+		countarray[light]=MAXLV;
+	} else {
+		for (i=0; i<MAXLV; i++) 
+			lightvalues[i]=0;
+	}
 
 	while(1) {
 
