@@ -35,8 +35,8 @@ be overwritten via the command line.
 Usage:  lightum [OPTION]...
      B<-m> I<4..255> : maximum brightness value in auto mode (default=255)
      B<-n> I<0..3>   : minimum brightness value in auto mode (default=0)
-     B<-M> I<4..15>  : maximum backlight value in auto mode (default=15)
-     B<-N> I<1..3>   : minimum backlight value in auto mode (default=1)
+     B<-M> I<7..15>  : maximum backlight value in auto mode (default=15)
+     B<-N> I<1..6>   : minimum backlight value in auto mode (default=1)
      B<-p> I<num>    : number of milliseconds between light sensor polls (default=300)
      B<-i> I<num>    : power off keyboard light on session idle seconds (0 to disable)
      B<-I> I<num>    : power off screen backlight on session idle seconds (0 to disable)

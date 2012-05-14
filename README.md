@@ -35,8 +35,8 @@ config file, but the configuration values can be overwritten via the command lin
     Usage:  lightum [OPTION]...
      -m 4..255 : maximum brightness value in auto mode (default=255)
      -n 0..3   : minimum brightness value in auto mode (default=0)
-     -M 4..15  : maximum backlight value in auto mode (default=15)
-     -N 1..3   : minimum backlight value in auto mode (default=1)
+     -M 7..15  : maximum backlight value in auto mode (default=15)
+     -N 1..6   : minimum backlight value in auto mode (default=1)
      -p num    : number of milliseconds between light sensor polls (default=300)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
      -I num    : power off screen backlight on session idle seconds (0 to disable)
