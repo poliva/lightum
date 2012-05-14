@@ -39,10 +39,12 @@ config file, but the configuration values can be overwritten via the command lin
      -N 1..6   : minimum backlight value in auto mode (default=1)
      -p num    : number of milliseconds between light sensor polls (default=300)
      -i num    : power off keyboard light on session idle seconds (0 to disable)
-     -I num    : power off screen backlight on session idle seconds (0 to disable)
+     -I num    : turn down screen backlight on session idle seconds (0 to disable)
      -w num    : 1 manage brightness, 2 manage backlight, 3 both (default:3)
      -x        : manual mode (will honor the brightness value set with Fn keys)
+     -l        : fully dim the screen backlight when session is idle
      -u        : do not ignore brightness changes happening outside lightum
+     -U        : ignore session information from ConsoleKit
      -s        : power off keyboard light when screen saver is active
      -f        : run in foreground (do not daemonize)
      -v        : verbose mode, useful for debugging with -f and -d

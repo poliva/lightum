@@ -41,9 +41,10 @@ void usage(const char *error) {
 	fprintf(stderr, "     -N 1..6   : minimum backlight value in auto mode (default=1)\n");
 	fprintf(stderr, "     -p num    : number of milliseconds between light sensor polls (default=300)\n");
 	fprintf(stderr, "     -i num    : power off keyboard light on session idle seconds (0 to disable)\n");
-	fprintf(stderr, "     -I num    : power off screen backlight on session idle seconds (0 to disable)\n");
+	fprintf(stderr, "     -I num    : turn down screen backlight on session idle seconds (0 to disable)\n");
 	fprintf(stderr, "     -w num    : 1 manage brightness, 2 manage backlight, 3 both (default:3)\n");
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
+	fprintf(stderr, "     -l        : fully dim the screen backlight when session is idle\n");
 	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
 	fprintf(stderr, "     -U        : ignore session information from ConsoleKit\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
@@ -100,7 +101,7 @@ int main(int argc, char *argv[]) {
 	conf = config_parse();
 
 	// overwrite config file with command line arguments
-	while ((c = getopt(argc, argv, "hxuUsvfm:n:M:N:p:I:i:d:w:?")) != EOF) {
+	while ((c = getopt(argc, argv, "hxuUlsvfm:n:M:N:p:I:i:d:w:?")) != EOF) {
 		switch(c) {
 			case 'h':
 				usage("");
@@ -113,6 +114,9 @@ int main(int argc, char *argv[]) {
 				break;
 			case 'U':
 				conf.ignoresession=1;
+				break;
+			case 'l':
+				conf.fulldim=1;
 				break;
 			case 's':
 				conf.queryscreensaver=1;
@@ -167,7 +171,8 @@ int main(int argc, char *argv[]) {
 	if (verbose) printf("\tminbacklight: %d\n",conf.minbacklight);
 	if (verbose) printf("\tpolltime: %d\n",conf.polltime);
 	if (verbose) printf("\tidleoff: %d\n",conf.idleoff);
-	if (verbose) printf("\tscreenidle: %d\n\n",conf.screenidle);
+	if (verbose) printf("\tscreenidle: %d\n",conf.screenidle);
+	if (verbose) printf("\tfulldim: %d\n\n",conf.fulldim);
 
 	// make sure all config values are correct
 	check_config_values(conf);
@@ -175,6 +180,8 @@ int main(int argc, char *argv[]) {
 
 	// if debug enabled, force verbose mode too
 	if (debug > 0) verbose=1;
+	// if verbose enabled, force foreground mode too
+	if (verbose) foreground=1;
 
 	if (conf.manualmode) printf("lightum v%s running in manual mode ", VERSION);
 	else printf("lightum v%s running in auto mode ", VERSION);
@@ -339,7 +346,8 @@ int main(int argc, char *argv[]) {
 							backlight_restoreflag=1;
 							if (debug == 2 || debug == 3) printf("backlight_restoreflag(%d) ", backlight_restore);
 						}
-						backlight=conf.minbacklight;
+						if (conf.fulldim) backlight=1;
+						else backlight=conf.minbacklight;
 					} else {
 						backlight=backlight_restore;
 						backlight_restoreflag=0;
@@ -358,7 +366,8 @@ int main(int argc, char *argv[]) {
 
 		if (conf.workmode == 2 || conf.workmode == 3) {
 			if ((conf.screenidle != 0) && (idletime > conf.screenidle)) {
-				backlight=conf.minbacklight;
+				if (conf.fulldim) backlight=1;
+				else backlight=conf.minbacklight;
 			}
 		}
 
@@ -389,7 +398,7 @@ int main(int argc, char *argv[]) {
 							/* make sure maxbrightness is never <4 */
 							if (brightness_restore < 4) conf.maxbrightness=4;
 							else conf.maxbrightness=brightness_restore;
-							if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",brightness_restore);
+							if (verbose) printf("-> Detected user brightness change, setting maxbrightness to %d\n",conf.maxbrightness);
 							brightness_prev=brightness_restore;
 						} else {
 							if (verbose) printf("-> Ignoring user brightness change, wants to set maxbrightness to %d\n",brightness_restore);
@@ -428,7 +437,7 @@ int main(int argc, char *argv[]) {
 							/* make sure maxbacklight is never <7 */
 							if (backlight_restore < 7) conf.maxbacklight=7;
 							else conf.maxbacklight=backlight_restore;
-							if (verbose) printf("-> Detected user backlight change, setting maxbacklight to %d\n",backlight_restore);
+							if (verbose) printf("-> Detected user backlight change, setting maxbacklight to %d\n",conf.maxbacklight);
 							backlight_prev=backlight_restore;
 						} else {
 							if (verbose) printf("-> Ignoring user backlight change, wants to set maxbacklight to %d\n",backlight_restore);

@@ -31,6 +31,7 @@ static const conf_data default_config = {
 	/* screenidle */ 30,
 	/* workmode */ 3,
 	/* ignoresession */ 0,
+	/* fulldim */ 0,
 };
 
 int file_exists(char* file) {
@@ -109,12 +110,16 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = turn off keyboard brightness when screensaver is active\n");
 	fprintf(fd, "#   0 = do not monitor screensaver status\n");
 	fprintf(fd, "queryscreensaver=%d\n\n", default_config.queryscreensaver);
-	fprintf(fd, "# maximum screen backlight value (between 4 and 15)\n");
+	fprintf(fd, "# maximum screen backlight value (between 7 and 15)\n");
 	fprintf(fd, "maxbacklight=%d\n\n", default_config.maxbacklight);
-	fprintf(fd, "# minimum screen backlight value (between 1 and 3)\n");
+	fprintf(fd, "# minimum screen backlight value (between 1 and 6)\n");
 	fprintf(fd, "minbacklight=%d\n\n", default_config.minbacklight);
-	fprintf(fd, "# turn off screen backlight if computer unused for X seconds (0 to disable)\n");
+	fprintf(fd, "# turn down screen backlight if computer unused for X seconds (0 to disable)\n");
 	fprintf(fd, "screenidle=%d\n\n", default_config.screenidle);
+	fprintf(fd, "# fully dim the backlight when screenidle seconds reached (default 0)\n");
+	fprintf(fd, "#   1 = when idle, backlight will be set to 1\n");
+	fprintf(fd, "#   0 = when idle, backlight will be set to minbacklight\n");
+	fprintf(fd, "fulldim=%d\n\n", default_config.fulldim);
 	fclose(fd);
 
 	return TRUE;
@@ -226,6 +231,13 @@ conf_data config_parse() {
 			len=strlen(temp);
 			temp[len+1]='\0';
 			config.ignoresession = atoi(temp);
+		}
+
+		if ((strncmp ("fulldim=", input, 8)) == 0) {
+			strncpy (temp, input + 8,MAXLEN-1);
+			len=strlen(temp);
+			temp[len+1]='\0';
+			config.fulldim = atoi(temp);
 		}
 
 	}

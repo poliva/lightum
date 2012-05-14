@@ -39,9 +39,10 @@ Usage:  lightum [OPTION]...
      B<-N> I<1..6>   : minimum backlight value in auto mode (default=1)
      B<-p> I<num>    : number of milliseconds between light sensor polls (default=300)
      B<-i> I<num>    : power off keyboard light on session idle seconds (0 to disable)
-     B<-I> I<num>    : power off screen backlight on session idle seconds (0 to disable)
+     B<-I> I<num>    : turn down screen backlight on session idle seconds (0 to disable)
      B<-w> I<num>    : 1 manage brightness, 2 manage backlight, 3 both (default:3)
      B<-x>        : manual mode (will honor the brightness value set with Fn keys)
+     B<-l>        : fully dim the screen backlight when session is idle
      B<-u>        : do not ignore brightness changes happening outside lightum
      B<-s>        : power off keyboard light when screen saver is active
      B<-f>        : run in foreground (do not daemonize)

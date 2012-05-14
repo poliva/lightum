@@ -27,6 +27,7 @@ typedef struct {
 	int screenidle;
 	int workmode;
 	int ignoresession;
+	int fulldim;
 } conf_data;
 
 /* configfile.c */
