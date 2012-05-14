@@ -90,8 +90,8 @@ int create_config_file(char* file) {
 	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
 	fprintf(fd, "ignoreuser=%d\n\n", default_config.ignoreuser);
 	fprintf(fd, "# ignoresession: check if current user has X session active\n");
-	fprintf(fd, "#   0 = useful if you don't use ConsoleKit on your X server\n");
-	fprintf(fd, "#   1 = useful if you are on a multi-user X server (default)\n");
+	fprintf(fd, "#   0 = useful if you are on a multi-user X server (default)\n");
+	fprintf(fd, "#   1 = useful if you don't use ConsoleKit on your X server\n");
 	fprintf(fd, "ignoresession=%d\n\n", default_config.ignoresession);
 	fprintf(fd, "# workmode\n");
 	fprintf(fd, "#   1 = only manage keyboard brightness (ignore screen backlight)\n");
