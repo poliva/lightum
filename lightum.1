@@ -133,7 +133,7 @@
 lightum \- MacBook automatic light sensor daemon
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-lightum [\-m \fIvalue\fR] [\-n \fIvalue\fR] [\-M \fIvalue\fR] [\-N \fIvalue\fR] [\-p \fIvalue\fR] [\-i \fIvalue\fR] [\-I \fIvalue\fR] [\-w {1,2,3}] [\-x] [\-u] [\-s] [\-f] [\-v] [\-d {1,2,3}]
+lightum [\-m \fIvalue\fR] [\-n \fIvalue\fR] [\-M \fIvalue\fR] [\-N \fIvalue\fR] [\-p \fIvalue\fR] [\-i \fIvalue\fR] [\-I \fIvalue\fR] [\-w {1,2,3}] [\-x] [\-u] [\-l] [\-s] [\-f] [\-v] [\-d {1,2,3}]
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 lightum is a daemon to control the keyboard brightness and monitor backlight on
@@ -232,6 +232,11 @@ Usage:  lightum [\s-1OPTION\s0]...
 \&     
 \&     # turn off screen backlight if computer unused for X seconds (0 to disable)
 \&     screenidle=30
+\&     
+\&     # fully dim the backlight when screenidle seconds reached (default 0)
+\&     #   1 = when idle, backlight will be set to 1
+\&     #   0 = when idle, backlight will be set to minbacklight
+\&     fulldim=0
 .Ve
 .SH "EXAMPLES"
 .IX Header "EXAMPLES"
@@ -255,6 +260,7 @@ The same command line example, but specified via config file:
 \&        maxbacklight=12
 \&        minbacklight=2
 \&        screenidle=30
+\&        fulldim=0
 .Ve
 .PP
 2) Run lightum in manual mode, used only to automatically turn off the keyboard brightness after 10 seconds of idle time

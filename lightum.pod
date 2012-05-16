@@ -4,7 +4,7 @@ lightum - MacBook automatic light sensor daemon
 
 =head1 SYNOPSIS
 
-lightum [-m I<value>] [-n I<value>] [-M I<value>] [-N I<value>] [-p I<value>] [-i I<value>] [-I I<value>] [-w {1,2,3}] [-x] [-u] [-s] [-f] [-v] [-d {1,2,3}]
+lightum [-m I<value>] [-n I<value>] [-M I<value>] [-N I<value>] [-p I<value>] [-i I<value>] [-I I<value>] [-w {1,2,3}] [-x] [-u] [-l] [-s] [-f] [-v] [-d {1,2,3}]
 
 =head1 DESCRIPTION
 
@@ -101,6 +101,11 @@ B<Options to manage screen backlight>:
      # turn off screen backlight if computer unused for X seconds (0 to disable)
      screenidle=30
 
+     # fully dim the backlight when screenidle seconds reached (default 0)
+     #   1 = when idle, backlight will be set to 1
+     #   0 = when idle, backlight will be set to minbacklight
+     fulldim=0
+
 =head1 EXAMPLES
 
 1) Run lightum in auto mode, managing both screen backlight and keyboard brightness automatically, changing the maximum and minimum values for both options and also changing the idle times to dim them:
@@ -120,6 +125,7 @@ The same command line example, but specified via config file:
 	maxbacklight=12
 	minbacklight=2
 	screenidle=30
+	fulldim=0
 
 2) Run lightum in manual mode, used only to automatically turn off the keyboard brightness after 10 seconds of idle time
 
