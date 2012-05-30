@@ -430,19 +430,17 @@ int main(int argc, char *argv[]) {
 			if (backlight!=backlight_prev) {
 				if (!conf.manualmode) {
 					backlight_restore=get_screen_backlight_value();
-					if (backlight_restore < conf.minbacklight) backlight_restore=conf.minbacklight;
 					if (debug == 2 || debug == 3) printf("\ncurrent backlight: %d\n",backlight_restore);
 					if ((backlight_restore != backlight_prev) && (backlight_restoreflag)) {
 						if (!conf.ignoreuser) {
-							/* make sure maxbacklight is never <7 */
-							if (backlight_restore < 7) conf.maxbacklight=7;
-							else conf.maxbacklight=backlight_restore;
-							if (verbose) printf("-> Detected user backlight change, setting maxbacklight to %d\n",conf.maxbacklight);
+							if (verbose) printf("-> Detected user backlight change, switching to manualmode\n");
+							conf.manualmode=1;
 							backlight_prev=backlight_restore;
+							backlight=backlight_restore;
 						} else {
 							if (verbose) printf("-> Ignoring user backlight change, wants to set maxbacklight to %d\n",backlight_restore);
+							backlight=calculate_screen_backlight_value(light, conf.maxbacklight, conf.minbacklight);
 						}
-						backlight=calculate_screen_backlight_value(light, conf.maxbacklight, conf.minbacklight);
 					}
 					backlight_restoreflag=1;
 				}
