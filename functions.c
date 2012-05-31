@@ -221,7 +221,9 @@ void fading(int from, int to) {
 		set_keyboard_brightness_value(from-step*3);
 		usleep(100000);
 		set_keyboard_brightness_value(to);
-	} else {
+	}
+
+	if (from < to) {
 		step=(to-from)/4;
 		set_keyboard_brightness_value(to-step*3);
 		usleep(20000);
@@ -249,7 +251,9 @@ void backlight_fading(int from, int to, int backend) {
 		set_screen_backlight_value(from-step*3, backend);
 		usleep(100000);
 		set_screen_backlight_value(to, backend);
-	} else {
+	}
+
+	if (from < to) {
 		step=(to-from)/4;
 		set_screen_backlight_value(to-step*3, backend);
 		usleep(20000);
