@@ -65,3 +65,6 @@ DBusGConnection* get_dbus_connection();
 DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection);
 DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *proxy_manager);
 int get_session_active (DBusGProxy *proxy_session);
+
+extern int get_screen_xbacklight_value();
+extern int set_screen_xbacklight_value(int backlight);
