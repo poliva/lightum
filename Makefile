@@ -12,7 +12,7 @@ bindir = $(prefix)/usr/bin
 docdir = $(prefix)/usr/share/doc
 mandir = $(prefix)/usr/share/man
 
-OBJ=functions.o dbus.o dbus-session.o configfile.o lightum.o
+OBJ=functions.o dbus.o dbus-session.o configfile.o lightum.o xbacklight.o
 BIN=lightum
 
 all: ${OBJ}

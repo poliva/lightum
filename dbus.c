@@ -15,6 +15,8 @@
 
 #include <dbus/dbus.h>
 
+extern int set_screen_xbacklight_value(int backlight);
+
 int get_screensaver_active() {
 
 	DBusConnection *connection;
@@ -382,6 +384,7 @@ int dbus_set_screen_backlight_value(int backlight, int backend) {
 
 	if (backend == 0) ret = dbus_set_screen_backlight_value_gnome(backlight); 
 	if (backend == 1) ret = dbus_set_screen_backlight_value_kde(backlight);
+	if (backend == 2) ret = set_screen_xbacklight_value(backlight);
 
 	return ret;
 }
