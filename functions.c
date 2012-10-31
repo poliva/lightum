@@ -118,11 +118,10 @@ int get_screen_backlight_value() {
 		return (15*actual_backlight)/max_backlight;
 
 	} else {
-		// fallback to read the current screen backlight value using dbus
-		// we prefer to avoid this because it forks gsd-backlight-helper
-		// from gnome-settings-daemon on each call.
+		// fallback to xbacklight
+		// we prefer to avoid this because it forks xbacklight
 
-		backlight = dbus_get_screen_backlight_value();
+		backlight = get_screen_xbacklight_value();
 		ret = dbus_to_acpi_backlight(backlight);
 		return ret;
 
@@ -281,7 +280,7 @@ void signal_handler(int sig) {
 	(void) sig;
 	set_keyboard_brightness_value(0);
 	remove_pid_file();
-	printf("Killed!\n");
+	printf("Killed with %d signal!\n",sig);
 	exit(1);
 }
 
@@ -297,7 +296,6 @@ void signal_installer() {
 	signal(SIGTERM, signal_handler);
 	signal(SIGHUP, signal_handler);
 	signal(SIGQUIT, signal_handler);
-	signal(SIGCHLD, signal_handler);
 	signal(SIGABRT, signal_handler);
 	signal(SIGUSR1, config_reload);
 }
