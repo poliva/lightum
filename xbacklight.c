@@ -18,7 +18,6 @@ int get_screen_xbacklight_value() {
 int set_screen_xbacklight_value(int backlight) {
 
 	char name[50];
-	sprintf(name,"xbacklight -set %d", backlight);
 
 	printf("%s\n",name);
 
