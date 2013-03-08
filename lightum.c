@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 	uid_t uid, euid;
 	int light_aux=-1, light_avg=-1;
 	int lightvalues[MAXLV] = {0};
-	int countarray[255] = {0};
+	int countarray[256] = {0};
 	unsigned int i,index=0;
 
 	// make sure we are run as a regular user
