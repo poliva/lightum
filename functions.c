@@ -114,7 +114,7 @@ int get_screen_backlight_value() {
 		close(fd);
 		max_backlight=atoi(buf);
 
-		/* make sure we always retrn a value between 0 and 15 */
+		/* make sure we always return a value between 0 and 15 */
 		return (15*actual_backlight)/max_backlight;
 
 	} else {

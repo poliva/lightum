@@ -85,8 +85,8 @@ int create_config_file(char* file) {
 	fprintf(fd, "#   1 = or control brightness/backlight manually using Fn+ F5/F6 keys\n");
 	fprintf(fd, "manualmode=%d\n\n", default_config.manualmode);
 	fprintf(fd, "# ignoreuser: only has effect in auto-mode (when manualmode=0)\n");
-	fprintf(fd, "#   0 = change maxbrightness value dinamically when user presses Fn+ F5/F6\n");
-	fprintf(fd, "#   1 = ignore brightness changess happening outside lightum and keep the\n");
+	fprintf(fd, "#   0 = change maxbrightness value dynamically when user presses Fn+ F5/F6\n");
+	fprintf(fd, "#   1 = ignore brightness changes happening outside lightum and keep the\n");
 	fprintf(fd, "#       maxbrightness value from the config file (fixes bug in ubuntu 12.04)\n");
 	fprintf(fd, "ignoreuser=%d\n\n", default_config.ignoreuser);
 	fprintf(fd, "# ignoresession: check if current user has X session active\n");
