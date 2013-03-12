@@ -282,7 +282,7 @@ int main(int argc, char *argv[]) {
 			light=get_light_sensor_value();
 			if (verbose) printf("light_sensor: %d ",light);
 
-			// to avoid backlight flickering when the light sensor flaps too fequently
+			// to avoid backlight flickering when the light sensor flaps too frequently
 			// between two values, we collect lighting values and use the most common
 			// value of the collected values
 
