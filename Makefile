@@ -1,6 +1,6 @@
 DESTDIR?=/
 SHELL = /bin/sh
-CC=gcc
+CC?=gcc
 CDEBUGFLAGS= -g -O2
 CFLAGS = `pkg-config --cflags dbus-1 --cflags dbus-glib-1` -Wall -Wextra -Wwrite-strings $(CDEBUGFLAGS)
 LDFLAGS= `pkg-config --libs dbus-1 --libs dbus-glib-1` $(CDEBUGFLAGS) -lX11 -lXext -lXss -lm
