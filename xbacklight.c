@@ -20,7 +20,7 @@ int set_screen_xbacklight_value(int backlight) {
 
 	char name[256];
 
-	sprintf(name, "xbacklight -set %.3d\n", backlight);
+	snprintf(name, 256, "xbacklight -set %.3d\n", backlight);
 
 	FILE * f = popen(name , "r" );
 	if ( f == 0 ) {
@@ -29,12 +29,12 @@ int set_screen_xbacklight_value(int backlight) {
 	}
 	const int BUFSIZE = 1000;
 	char buf[ BUFSIZE ];
-        errno = 0;
+	errno = 0;
 	while( fgets( buf, BUFSIZE,  f ) ) {
 		;
 	}
-        if (errno != 0)
-            perror("xbacklight");
+	if (errno != 0)
+	    perror("xbacklight");
 	pclose( f );
 
 	return 1;
