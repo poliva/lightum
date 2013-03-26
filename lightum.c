@@ -205,11 +205,13 @@ int main(int argc, char *argv[]) {
 	if (!create_pid_file()) exit(1);
 
 	/* start with current brightness values */
+	brightness_restore=0;
 	if (conf.workmode == 1 || conf.workmode == 3) {
 		brightness_restore=get_keyboard_brightness_value();
 	}
 
 	/* start with current backlight values */
+	backlight_restore=0;
 	if (conf.workmode == 2 || conf.workmode == 3) {
 		backlight_restore=get_screen_backlight_value();
 
@@ -244,6 +246,9 @@ int main(int argc, char *argv[]) {
 
 	signal_installer();
 
+	connection = 0;
+	proxy_manager = 0;
+	proxy_session = 0;
 	if (!conf.ignoresession) {
 		connection = get_dbus_connection();
 		proxy_manager = get_dbus_proxy_manager(connection);
