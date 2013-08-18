@@ -60,7 +60,15 @@ Official Ubuntu packages are available in [poliva/lightum-mba ppa](https://launc
      sudo apt-get update
      sudo apt-get install lightum
      
+Compiling from source
+---------------------
+(Tested on Ubuntu 13.04)
 
+  1. Install the build-essentials package: ```sudo apt-get install build-essentials```
+  2. Clone the repository by running ```git clone https://github.com/poliva/lightum111 and ```cd``` into the project's directory.
+  3. Install the dependencies ```sudo apt-get install libxss-dev libdbus-glib-1-dev```
+  4. Run ```make```
+  5. Run ```sudo make install```
 
 Indicator applet
 ----------------
