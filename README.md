@@ -64,7 +64,7 @@ Compiling from source
 ---------------------
 (Tested on Ubuntu 13.04)
 
-  1. Install the build-essentials package: ```sudo apt-get install build-essentials```
+  1. Install the build-essential package: ```sudo apt-get install build-essential```
   2. Clone the repository by running ```git clone https://github.com/poliva/lightum``` and ```cd``` into the project's directory.
   3. Install the dependencies ```sudo apt-get install libxss-dev libdbus-glib-1-dev```
   4. Run ```make```
