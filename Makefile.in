@@ -1,0 +1,55 @@
+CC      ?= @CC@
+CFLAGS  ?= @CFLAGS@ -Wall -Wextra -Wwrite-strings
+
+srcdir = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+datarootdir = @datarootdir@
+bindir = @bindir@
+docdir = @docdir@
+mandir = @mandir@
+
+INSTALL = @INSTALL@
+INSTALL_BIN = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+MKDIR = @MKDIR_P@
+
+deps_cflags = @X11_CFLAGS@ @DBUS_CFLAGS@
+deps_libs = @X11_LIBS@ @DBUS_LIBS@ -lm
+
+objects = lightum.o functions.o xbacklight.o dbus.o dbus-session.o configfile.o
+lightum_bin = lightum
+
+all: $(lightum_bin)
+
+$(lightum_bin): $(objects)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS) $(deps_libs)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $(deps_cflags) $<
+
+install: all
+	$(MKDIR) $(DESTDIR)$(bindir)
+	$(INSTALL_BIN) lightum $(DESTDIR)$(bindir)/lightum
+
+	$(MKDIR) $(DESTDIR)$(prefix)/etc/xdg/autostart
+	$(INSTALL_DATA) lightum.desktop $(DESTDIR)$(prefix)/etc/xdg/autostart/
+
+	$(MKDIR) $(DESTDIR)$(docdir)/lightum
+	$(INSTALL_DATA) $(srcdir)/README $(DESTDIR)$(docdir)/lightum/
+	$(INSTALL_DATA) $(srcdir)/LICENSE $(DESTDIR)$(docdir)/lightum/
+
+	$(MKDIR) $(DESTDIR)$(mandir)/man1
+	$(INSTALL_DATA) $(srcdir)/lightum.1 $(DESTDIR)$(mandir)/man1/
+
+uninstall:
+	rm -f $(DESTDIR)$(bindir)/lightum
+	rm -f $(DESTDIR)$(prefix)/etc/xdg/autostart/lightum.desktop
+	rm -rf $(DESTDIR)$(docdir)/lightum
+	rm -f $(DESTDIR)$(mandir)/man1/lightum.1
+
+distclean:
+	rm -rf Makefile config.h config.log config.status autom4te.cache aclocal.m4
+
+clean:
+	rm -f $(lightum_bin) $(objects)
