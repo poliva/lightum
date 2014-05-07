@@ -13,76 +13,97 @@
  */
 
 #include <stdlib.h>
-#include <dbus/dbus-glib-lowlevel.h>
+#include <gio/gio.h>
+#include <systemd/sd-login.h>
 
-#define CK_NAME      "org.freedesktop.ConsoleKit"
-#define CK_MANAGER_PATH      "/org/freedesktop/ConsoleKit/Manager"
-#define CK_MANAGER_INTERFACE "org.freedesktop.ConsoleKit.Manager"
-#define CK_SESSION_INTERFACE "org.freedesktop.ConsoleKit.Session"
+#define SD_NAME      "org.freedesktop.login1"
+#define SD_MANAGER_PATH      "/org/freedesktop/login1"
+#define SD_MANAGER_INTERFACE "org.freedesktop.login1.Manager"
+#define SD_SESSION_INTERFACE "org.freedesktop.login1.Session"
 
-static gboolean get_boolean (DBusGProxy *proxy, const char *method, gboolean *value)
+int get_session_active (GDBusProxy *proxy)
 {
-        GError  *error;
-        gboolean res;
 
-        error = NULL;
-        res = dbus_g_proxy_call (proxy,
-                                 method,
-                                 &error,
-                                 G_TYPE_INVALID,
-                                 G_TYPE_BOOLEAN, value,
-                                 G_TYPE_INVALID);
-        if (! res) {
-                g_warning ("%s failed: %s", method, error->message);
+	GVariant *value;
+	char	 *state;
+
+	value = g_dbus_proxy_get_cached_property (proxy, "State");
+	if (!value)
+		return FALSE;
+
+	g_variant_get (value, "s", &state);
+	g_variant_unref (value);
+
+	if (g_strcmp0 (state, "active") == 0) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+
+}
+
+GDBusProxy* get_dbus_proxy_session(GDBusConnection *connection, GDBusProxy *proxy_manager)
+{
+
+        GDBusProxy *proxy;
+        GError     *error = NULL;
+ 	char	   *session;
+        GVariant   *res;
+	char	   *ssid;
+
+	sd_pid_get_session (getpid (), &session);
+
+        res = g_dbus_proxy_call_sync (proxy_manager,
+                                      "GetSession",
+				      g_variant_new("(s)", session),
+				      G_DBUS_CALL_FLAGS_NONE,
+                        	      -1,
+                        	      NULL,
+                        	      &error);
+				      
+        if (res == NULL) {
+                g_warning ("%s failed: %s", "GetSession", error->message);
                 g_error_free (error);
         }
 
-        return res;
+	// Get the object path from the introspection data
+	g_variant_get (res, "(&o)", &ssid);
+
+        proxy = g_dbus_proxy_new_sync (connection,
+				       G_DBUS_PROXY_FLAGS_NONE,
+                                       NULL,
+                                       SD_NAME,
+                                       ssid,
+                                       SD_SESSION_INTERFACE,
+                                       NULL,
+                                       &error);
+
+        if (proxy == NULL) {
+		g_warning ("%s: Could not get dbus session proxy", __func__);
+                exit (1);
+	}
+
+	return proxy;
+
 }
 
-int get_session_active (DBusGProxy *proxy_session)
-{
-        gboolean    is_active;
-        gboolean    is_local;
-
-        get_boolean (proxy_session, "IsActive", &is_active);
-        get_boolean (proxy_session, "IsLocal", &is_local);
-
-	if (is_active && is_local) return 1;
-	else return 0;
-
-}
-
-DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *proxy_manager)
+GDBusProxy* get_dbus_proxy_manager(GDBusConnection *connection)
 {
 
-        DBusGProxy *proxy;
+        GDBusProxy *proxy;
         GError     *error;
-        gboolean    res;
-	char *ssid;
 
-        error = NULL;
-        res = dbus_g_proxy_call (proxy_manager,
-                                 "GetCurrentSession",
-                                 &error,
-                                 G_TYPE_INVALID,
-                                 DBUS_TYPE_G_OBJECT_PATH, &ssid,
-                                 G_TYPE_INVALID);
-
-	g_object_unref (proxy_manager);
-
-        if (! res) {
-                g_warning ("%s failed: %s", "GetCurrentSession", error->message);
-                g_error_free (error);
-        }
-
-        proxy = dbus_g_proxy_new_for_name (connection,
-                                           CK_NAME,
-                                           ssid,
-                                           CK_SESSION_INTERFACE);
+        proxy = g_dbus_proxy_new_sync (connection,
+				       G_DBUS_PROXY_FLAGS_NONE,
+                                       NULL,
+                                       SD_NAME,
+                                       SD_MANAGER_PATH,
+                                       SD_MANAGER_INTERFACE,
+                                       NULL,
+                                       &error);
 
         if (proxy == NULL) {
-		g_warning ("Could not get dbus session proxy");
+		g_warning ("%s: Could not get dbus manager proxy", __func__);
                 exit (1);
 	}
 
@@ -90,33 +111,13 @@ DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *prox
 
 }
 
-DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection)
+GDBusConnection* get_dbus_connection()
 {
-
-        DBusGProxy *proxy;
-
-        proxy = dbus_g_proxy_new_for_name (connection,
-                                           CK_NAME,
-                                           CK_MANAGER_PATH,
-                                           CK_MANAGER_INTERFACE);
-        if (proxy == NULL) {
-		g_warning ("Could not get dbus manager proxy");
-                exit (1);
-	}
-
-	return proxy;
-
-}
-
-DBusGConnection* get_dbus_connection()
-{
-        DBusGConnection *connection;
+        GDBusConnection *connection;
 
         GOptionContext *context;
         gboolean        retval;
         GError         *error = NULL;
-
-        g_type_init ();
 
         context = g_option_context_new (NULL);
         retval = g_option_context_parse (context, NULL, NULL, &error);
@@ -130,9 +131,9 @@ DBusGConnection* get_dbus_connection()
         }
 
         error = NULL;
-        connection = dbus_g_bus_get (DBUS_BUS_SYSTEM, &error);
+        connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, &error);
         if (connection == NULL) {
-                g_message ("Failed to connect to the D-Bus daemon: %s", error->message);
+                g_message ("%s: Failed to connect to the D-Bus daemon: %s", __func__, error->message);
                 g_error_free (error);
                 exit (1);
         }

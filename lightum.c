@@ -46,7 +46,7 @@ void usage(const char *error) {
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
 	fprintf(stderr, "     -l        : fully dim the screen backlight when session is idle\n");
 	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
-	fprintf(stderr, "     -U        : ignore session information from ConsoleKit\n");
+	fprintf(stderr, "     -U        : ignore session information from systemd\n");
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
 	fprintf(stderr, "     -f        : run in foreground (do not daemonize)\n");
 	fprintf(stderr, "     -v        : verbose mode, useful for debugging with -f and -d\n");
@@ -80,9 +80,9 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	conf_data conf;
 	Display *display = NULL;
-        DBusGConnection *connection;
-        DBusGProxy *proxy_manager;
-        DBusGProxy *proxy_session;
+        GDBusConnection *connection;
+        GDBusProxy *proxy_manager;
+        GDBusProxy *proxy_session;
 	uid_t uid, euid;
 	int light_aux=-1, light_avg=-1;
 	int lightvalues[15] = {0};

@@ -5,8 +5,8 @@ Maintainer: Pau Oliva Fora (pof) <pau@eslack.org>
 Build-Depends: debhelper (>= 8.0.0),
  autotools-dev,
  pkg-config,
- libdbus-1-dev,
- libdbus-glib-1-dev,
+ libglib2.0-dev,
+ libsystemd-login-dev,
  libxss-dev,
  libc6-dev
 Standards-Version: 3.9.3
@@ -16,7 +16,7 @@ Vcs-Browser: https://github.com/poliva/lightum
 
 Package: lightum
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, upower, consolekit
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, upower, systemd-services
 Description: MacBook automatic light sensor daemon
  This program adjusts the keyboard brightness and screen
  backlight on MacBook laptops, it does it by reading the
