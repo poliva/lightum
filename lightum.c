@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
 		if (!conf.ignoresession) {
 			if (! get_session_active(proxy_session) ) {
 				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\nIf you believe this is an error, try running lightum with 'ignoresession=1' or '-U' command line switch.\n", conf.polltime);
-				usleep(conf.polltime*1000);
+				g_usleep(conf.polltime*1000);
 				continue;
 			}
 		}
@@ -417,7 +417,7 @@ int main(int argc, char *argv[]) {
 				}
 				if (debug == 1 || debug == 3) printf ("-> set keyboard brightness: %d -> %d\n",brightness_prev,brightness);
 				fading(brightness_prev,brightness);
-				usleep(1500);
+				g_usleep(1500);
 				brightness=get_keyboard_brightness_value();
 				brightness_prev=brightness;
 			}
@@ -454,7 +454,7 @@ int main(int argc, char *argv[]) {
 				}
 				if (debug == 2 || debug == 3) printf ("-> set screen backlight: %d -> %d\n",backlight_prev,backlight);
 				backlight_fading(backlight_prev, backlight, dbus_backend);
-				usleep(1500);
+				g_usleep(1500);
 				backlight=get_screen_backlight_value();
 				backlight_prev=backlight;
 			}
@@ -472,7 +472,7 @@ int main(int argc, char *argv[]) {
 
 		if (verbose) printf("\n");
 
-		usleep(conf.polltime*1000);
+		g_usleep(conf.polltime*1000);
 	}
 
 	// we should never reach here.

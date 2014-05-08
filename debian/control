@@ -16,7 +16,7 @@ Vcs-Browser: https://github.com/poliva/lightum
 
 Package: lightum
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, upower, systemd-services
+Depends: ${shlibs:Depends}, ${misc:Depends}, dbus, upower, systemd-services, xbacklight
 Description: MacBook automatic light sensor daemon
  This program adjusts the keyboard brightness and screen
  backlight on MacBook laptops, it does it by reading the

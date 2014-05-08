@@ -214,22 +214,22 @@ void fading(int from, int to) {
 	if (from > to) {
 		step=(from-to)/4;
 		set_keyboard_brightness_value(from-step);
-		usleep(100000);
+		g_usleep(100000);
 		set_keyboard_brightness_value(from-step*2);
-		usleep(100000);
+		g_usleep(100000);
 		set_keyboard_brightness_value(from-step*3);
-		usleep(100000);
+		g_usleep(100000);
 		set_keyboard_brightness_value(to);
 	}
 
 	if (from < to) {
 		step=(to-from)/4;
 		set_keyboard_brightness_value(to-step*3);
-		usleep(20000);
+		g_usleep(20000);
 		set_keyboard_brightness_value(to-step*2);
-		usleep(20000);
+		g_usleep(20000);
 		set_keyboard_brightness_value(to-step);
-		usleep(20000);
+		g_usleep(20000);
 		set_keyboard_brightness_value(to);
 	}
 }
@@ -244,22 +244,22 @@ void backlight_fading(int from, int to, int backend) {
 	if (from > to) {
 		step=(from-to)/4;
 		set_screen_backlight_value(from-step, backend);
-		usleep(100000);
+		g_usleep(100000);
 		set_screen_backlight_value(from-step*2, backend);
-		usleep(100000);
+		g_usleep(100000);
 		set_screen_backlight_value(from-step*3, backend);
-		usleep(100000);
+		g_usleep(100000);
 		set_screen_backlight_value(to, backend);
 	}
 
 	if (from < to) {
 		step=(to-from)/4;
 		set_screen_backlight_value(to-step*3, backend);
-		usleep(20000);
+		g_usleep(20000);
 		set_screen_backlight_value(to-step*2, backend);
-		usleep(20000);
+		g_usleep(20000);
 		set_screen_backlight_value(to-step, backend);
-		usleep(20000);
+		g_usleep(20000);
 		set_screen_backlight_value(to, backend);
 	}
 }
@@ -381,6 +381,8 @@ int create_pid_file() {
 	}
 	close(fd);
 
+	free(path);
+	free(pidfile);
 	free(procpid);
 
 	return TRUE;

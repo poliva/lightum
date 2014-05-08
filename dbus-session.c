@@ -31,7 +31,7 @@ int get_session_active (GDBusProxy *proxy)
 	if (!value)
 		return FALSE;
 
-	g_variant_get (value, "s", &state);
+	g_variant_get (value, "&s", &state);
 	g_variant_unref (value);
 
 	if (g_strcmp0 (state, "active") == 0) {
@@ -79,9 +79,13 @@ GDBusProxy* get_dbus_proxy_session(GDBusConnection *connection, GDBusProxy *prox
                                        &error);
 
         if (proxy == NULL) {
-		g_warning ("%s: Could not get dbus session proxy", __func__);
+		g_warning ("%s: Could not get dbus session proxy: %s", __func__, error->message);
+		g_error_free (error);
                 exit (1);
 	}
+
+	g_free (session);
+	g_free (ssid);
 
 	return proxy;
 
@@ -103,7 +107,8 @@ GDBusProxy* get_dbus_proxy_manager(GDBusConnection *connection)
                                        &error);
 
         if (proxy == NULL) {
-		g_warning ("%s: Could not get dbus manager proxy", __func__);
+		g_warning ("%s: Could not get dbus manager proxy: %s", __func__, error->message);
+		g_error_free (error);
                 exit (1);
 	}
 
@@ -114,10 +119,9 @@ GDBusProxy* get_dbus_proxy_manager(GDBusConnection *connection)
 GDBusConnection* get_dbus_connection()
 {
         GDBusConnection *connection;
-
-        GOptionContext *context;
-        gboolean        retval;
-        GError         *error = NULL;
+        GOptionContext	*context;
+        gboolean         retval;
+        GError         	*error = NULL;
 
         context = g_option_context_new (NULL);
         retval = g_option_context_parse (context, NULL, NULL, &error);
