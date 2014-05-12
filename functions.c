@@ -35,7 +35,7 @@ int get_keyboard_brightness_value() {
 	fd = open(kbd_backlight, O_RDONLY);
 	if (fd < 0) {
 		perror (kbd_backlight);
-                fprintf (stderr, "Can't open %s\n",kbd_backlight);
+            fprintf (stderr, "Can't open %s\n",kbd_backlight);
 		exit(1);
 	}
 	cnt=read(fd, buf, sizeof(buf)-1);
@@ -58,7 +58,7 @@ int get_light_sensor_value() {
 	fd = open(light_sensor, O_RDONLY);
 	if (fd < 0) {
 		perror (light_sensor);
-                fprintf (stderr, "Can't open %s\n",light_sensor);
+            fprintf (stderr, "Can't open %s\n",light_sensor);
 		exit(1);
 	}
 	cnt=read(fd, buf, sizeof(buf)-1);
@@ -86,7 +86,7 @@ int get_screen_backlight_value() {
 	const char *scr_backlight="/sys/class/backlight/acpi_video0/actual_brightness";
 	const char *scr_maxbacklight="/sys/class/backlight/acpi_video0/max_brightness";
 	ssize_t cnt;
-        int ret=0, backlight=15;
+    int ret=0, backlight=15;
 
 	if (stat(scr_backlight, &tmp) == 0) {
 
@@ -197,9 +197,9 @@ int calculate_screen_backlight_value(int light, int maxbacklight, int minbacklig
 
 	int backlight=0;
 
-        backlight=minbacklight+(log(light+1)/log(256))*(maxbacklight+1-minbacklight);
-        if (backlight < minbacklight) backlight=minbacklight;
-        if (backlight > maxbacklight) backlight=maxbacklight;
+    backlight=minbacklight+(log(light+1)/log(256))*(maxbacklight+1-minbacklight);
+    if (backlight < minbacklight) backlight=minbacklight;
+    if (backlight > maxbacklight) backlight=maxbacklight;
 
 	return backlight;
 }

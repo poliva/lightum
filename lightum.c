@@ -80,9 +80,9 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	conf_data conf;
 	Display *display = NULL;
-        GDBusConnection *connection;
-        GDBusProxy *proxy_manager;
-        GDBusProxy *proxy_session;
+    GDBusConnection *connection;
+    GDBusProxy *proxy_manager;
+    GDBusProxy *proxy_session;
 	uid_t uid, euid;
 	int light_aux=-1, light_avg=-1;
 	int lightvalues[15] = {0};
