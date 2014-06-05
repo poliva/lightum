@@ -53,6 +53,7 @@ int remove_pid_file();
 int create_pid_file();
 
 /* dbus.c */
+GDBusConnection* get_dbus_message_bus(GBusType *bus_type);
 int get_screensaver_active();
 int set_keyboard_brightness_value(int brightness);
 int dbus_get_screen_backlight_value();

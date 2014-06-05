@@ -9,376 +9,334 @@
  *
  */
 
+#include <gio/gio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <dbus/dbus.h>
+/* GNOME Screensaver */
+#define GS_DBUS_SERVICE     "org.gnome.ScreenSaver"
+#define GS_DBUS_PATH        "/org/gnome/ScreenSaver"
+#define GS_DBUS_INTERFACE   "org.gnome.ScreenSaver"
 
-extern int set_screen_xbacklight_value(int backlight);
+/* UPower */
+#define UP_DBUS_SERVICE     "org.freedesktop.UPower"
+#define UP_DBUS_PATH        "/org/freedesktop/UPower/KbdBacklight"
+#define UP_DBUS_INTERFACE   "org.freedesktop.UPower.KbdBacklight"
+
+/* GNOME SettingsDaemon */
+#define SD_DBUS_SERVICE     "org.gnome.SettingsDaemon"
+#define SD_DBUS_PATH        "/org/gnome/SettingsDaemon/Power"
+#define SD_DBUS_INTERFACE   "org.gnome.SettingsDaemon.Power.Screen"
+
+/* KDE PowerManagement */
+#define KDE_DBUS_SERVICE    "org.kde.Solid.PowerManagement"
+#define KDE_DBUS_PATH       "/org/kde/Solid/PowerManagement"
+#define KDE_DBUS_INTERFACE  "org.kde.Solid.PowerManagement"
+
+extern int set_screen_xbacklight_value (int backlight);
+
+GDBusConnection *get_dbus_message_bus (int bus_type) {
+ 
+    GDBusConnection *connection;
+    GError *error = NULL;
+    
+    connection = g_bus_get_sync (bus_type, NULL, &error);
+    if (error) {
+        g_warning ("Failed to get session bus: %s", error->message);
+    }
+    g_clear_error (&error);
+    if (connection == NULL) {
+        return NULL;
+    }
+
+    return connection;
+    
+}
 
 int get_screensaver_active() {
 
-	DBusConnection *connection;
-	DBusError error;
-	DBusMessage *message;
-	DBusMessageIter iter;
-	DBusBusType type;
-	DBusMessage *reply;
+    GDBusMessage    *message, *reply;
+    GDBusConnection *connection;
+    GError          *error;
+    GVariant        *body; 
+    gint32           value;
+    
+    connection = get_dbus_message_bus (G_BUS_TYPE_SESSION);
 
-	int retval=0;
-	const char *name = NULL;
-	char arg[]="org.gnome.ScreenSaver.GetActive";
-	name=arg;
-	const char *dest = "org.gnome.ScreenSaver";
-	const char *path = "/org/gnome/ScreenSaver";
+    message = g_dbus_message_new_method_call (
+        GS_DBUS_SERVICE,
+        GS_DBUS_PATH,
+        GS_DBUS_INTERFACE,
+        "GetActive");        
+    
+    if (message == NULL) {
+        g_warning ("Failed to allocate the dbus message");
+        return -1;
+    }
 
-	type = DBUS_BUS_SESSION;
+    g_dbus_message_set_body (
+        message, 
+        g_variant_new ("(b)", TRUE)
+    );  
+          
+    error = NULL;
+    
+    reply = g_dbus_connection_send_message_with_reply_sync (
+        connection,
+        message,
+        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        &error);
+    if (error != NULL) {
+        g_warning ("unable to send message: %s", error->message);
+        g_clear_error (&error);
+    }
 
-	int reply_timeout;
-	reply_timeout = 2000;
+    g_dbus_connection_flush_sync (connection, NULL, &error);
+    if (error != NULL) {
+        g_warning ("unable to flush message queue: %s", error->message);
+        g_clear_error (&error);
+    }
+   
+    body = g_dbus_message_get_body (reply);
+    g_variant_get (body, "(&s)", &value);
+    
+    g_object_unref (connection);
+    g_object_unref (message);
+    g_object_unref (reply);
 
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
+    return value;
 
-	if (connection == NULL) {
-		fprintf (stderr, "Failed to open connection to message bus: %s\n", error.message);
-		dbus_error_free (&error);
-		return (-1);
-	}
-
-	char *last_dot;
-	last_dot = strrchr (name, '.');
-	*last_dot = '\0';
-
-	message = dbus_message_new_method_call (NULL,path,name,last_dot + 1);
-	dbus_message_set_auto_start (message, TRUE);
-
-	if (message == NULL)
-	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
-		return (-1);
-	}
-
-	if (dest && !dbus_message_set_destination (message, dest))
-	{
-		fprintf (stderr, "Not enough memory\n");
-		return (-1);
-	}
-
-	dbus_message_iter_init_append (message, &iter);
-
-	dbus_error_init (&error);
-	reply = dbus_connection_send_with_reply_and_block (connection, message, reply_timeout, &error);
-	if (dbus_error_is_set (&error)) {
-		fprintf (stderr, "Error %s: %s\n",error.name,error.message);
-		return (-1);
-	}
-
-	if (reply)
-	{
-		dbus_message_iter_init (reply, &iter);
-		dbus_bool_t val;
-		dbus_message_iter_get_basic (&iter, &val);
-		retval = val;
-		dbus_message_unref (reply);
-	}
-
-	dbus_message_unref (message);
-	dbus_connection_unref (connection);
-
-	return retval;
 }
 
+int set_keyboard_brightness_value (int brightness) {
 
-int set_keyboard_brightness_value(int brightness) {
+    GDBusMessage    *message, *reply;
+    GDBusConnection *connection;
+    GError          *error;
+    
+    connection = get_dbus_message_bus (G_BUS_TYPE_SYSTEM);
 
-	DBusConnection *connection;
-	DBusError error;
-	DBusMessage *message;
-	DBusMessageIter iter;
-	DBusBusType type;
+    message = g_dbus_message_new_method_call (
+        UP_DBUS_SERVICE,
+        UP_DBUS_PATH,
+        UP_DBUS_INTERFACE,
+        "SetBrightness");        
+    
+    if (message == NULL) {
+        g_warning ("Failed to allocate the dbus message");
+        return -1;
+    }
 
-	const char *name = NULL;
-	char arg[]="org.freedesktop.UPower.KbdBacklight.SetBrightness";
-	name=arg;
-	const char *dest="org.freedesktop.UPower";
-	const char *path="/org/freedesktop/UPower/KbdBacklight";
+    g_dbus_message_set_body (
+        message, 
+        g_variant_new ("(i)", brightness)
+    );  
+          
+    error = NULL;
+    
+    reply = g_dbus_connection_send_message_with_reply_sync (
+        connection,
+        message,
+        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        &error);
+    if (error != NULL) {
+        g_warning ("unable to send message: %s", error->message);
+        g_clear_error (&error);
+    }
 
-	type = DBUS_BUS_SYSTEM;
+    g_dbus_connection_flush_sync (connection, NULL, &error);
+    if (error != NULL) {
+        g_warning ("unable to flush message queue: %s", error->message);
+        g_clear_error (&error);
+    }
+ 
+    g_object_unref (reply);
+    g_object_unref (connection);
+    g_object_unref (message);
 
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
-
-	if (connection == NULL) {
-		fprintf (stderr, "Failed to open connection to message bus: %s\n", error.message);
-		dbus_error_free (&error);
-		return (-1);
-	}
-
-	char *last_dot;
-	last_dot = strrchr (name, '.');
-	*last_dot = '\0';
-
-	message = dbus_message_new_method_call (NULL,path,name,last_dot + 1);
-	dbus_message_set_auto_start (message, TRUE);
-
-	if (message == NULL)
-	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
-		return (-1);
-	}
-
-	if (dest && !dbus_message_set_destination (message, dest))
-	{
-		fprintf (stderr, "Not enough memory\n");
-		return (-1);
-	}
-
-	dbus_message_iter_init_append (message, &iter);
-
-	dbus_int32_t int32;
-	int32 = brightness;
-	dbus_message_iter_append_basic (&iter, DBUS_TYPE_INT32, &int32);
-
-	dbus_connection_send (connection, message, NULL);
-	dbus_connection_flush (connection);
-	dbus_message_unref (message);
-	dbus_connection_unref (connection);
-	return 0;
+    return 0;
 }
-
 
 int dbus_get_screen_backlight_value() {
 
-	DBusConnection *connection;
-	DBusError error;
-	DBusMessage *message;
-	DBusMessageIter iter;
-	DBusBusType type;
-	DBusMessage *reply;
+    GDBusMessage    *message, *reply;
+    GDBusConnection *connection;
+    GError          *error;
+    GVariant        *body; 
+    gint32           value;
+    
+    connection = get_dbus_message_bus(G_BUS_TYPE_SESSION);
 
-	int retval=0;
-	const char *name = NULL;
-	char arg[]="org.gnome.SettingsDaemon.Power.Screen.GetPercentage";
-	name=arg;
-	const char *dest = "org.gnome.SettingsDaemon";
-	const char *path = "/org/gnome/SettingsDaemon/Power";
+    message = g_dbus_message_new_method_call (
+        SD_DBUS_SERVICE,
+        SD_DBUS_PATH,
+        SD_DBUS_INTERFACE,
+        "GetPercentage");        
+    
+    if (message == NULL) {
+        g_warning ("Failed to allocate the dbus message");
+        return -1;
+    }
 
-	type = DBUS_BUS_SESSION;
+    g_warning ("before message_get_body");
+    g_dbus_message_set_body (
+        message, 
+        g_variant_new ("(y)", NULL));  
+          
+    error = NULL;
+    
+    reply = g_dbus_connection_send_message_with_reply_sync (
+        connection,
+        message,
+        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        &error);
+    if (error != NULL) {
+        g_warning ("unable to send message: %s", error->message);
+        g_clear_error (&error);
+    }
 
-	int reply_timeout;
-	reply_timeout = 2000;
+    g_dbus_connection_flush_sync (connection, NULL, &error);
+    if (error != NULL) {
+        g_warning ("unable to flush message queue: %s", error->message);
+        g_clear_error (&error);
+    }
+   
+    body = g_dbus_message_get_body (reply);
+    g_variant_get (body, "(u)", &value);
+ 
+    g_object_unref (connection);
+    g_object_unref (message);
+    g_object_unref (reply);
 
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
+    return value;
 
-	if (connection == NULL) {
-		fprintf (stderr, "Failed to open connection to message bus: %s\n", error.message);
-		dbus_error_free (&error);
-		return (-1);
-	}
-
-	char *last_dot;
-	last_dot = strrchr (name, '.');
-	*last_dot = '\0';
-
-	message = dbus_message_new_method_call (NULL,path,name,last_dot + 1);
-	dbus_message_set_auto_start (message, TRUE);
-
-	if (message == NULL)
-	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
-		return (-1);
-	}
-
-	if (dest && !dbus_message_set_destination (message, dest))
-	{
-		fprintf (stderr, "Not enough memory\n");
-		return (-1);
-	}
-
-	dbus_message_iter_init_append (message, &iter);
-
-	dbus_error_init (&error);
-	reply = dbus_connection_send_with_reply_and_block (connection, message, reply_timeout, &error);
-	if (dbus_error_is_set (&error)) {
-		fprintf (stderr, "Error %s: %s\n",error.name,error.message);
-		return (-1);
-	}
-
-	if (reply)
-	{
-		dbus_message_iter_init (reply, &iter);
-		dbus_bool_t val;
-		dbus_message_iter_get_basic (&iter, &val);
-		retval = val;
-		dbus_message_unref (reply);
-	}
-
-	dbus_message_unref (message);
-	dbus_connection_unref (connection);
-
-	return retval;
 }
 
-int dbus_set_screen_backlight_value_gnome(int backlight) {
+int dbus_set_screen_backlight_value_gnome (int backlight) {
 
-	DBusConnection *connection;
-	DBusError error;
-	DBusMessage *message;
-	DBusMessageIter iter;
-	DBusBusType type;
-	DBusMessage *reply;
+    GDBusMessage    *message, *reply;
+    GDBusConnection *connection;
+    GError          *error;
+    GVariant        *body; 
+    gint32           value;
+    
+    connection = get_dbus_message_bus (G_BUS_TYPE_SESSION);
+ 
+    message = g_dbus_message_new_method_call (
+        SD_DBUS_SERVICE,
+        SD_DBUS_PATH,
+        SD_DBUS_INTERFACE,
+        "SetPercentage");        
+    
+    if (message == NULL) {
+        g_warning ("Failed to allocate the dbus message");
+        return -1;
+    }
 
-	int retval=0;
-	const char *name = NULL;
-	char arg[]="org.gnome.SettingsDaemon.Power.Screen.SetPercentage";
-	name=arg;
-	const char *dest = "org.gnome.SettingsDaemon";
-	const char *path = "/org/gnome/SettingsDaemon/Power";
+    g_dbus_message_set_body (
+        message, 
+        g_variant_new ("(u)", backlight));  
+          
+    error = NULL;
+    
+    reply = g_dbus_connection_send_message_with_reply_sync (
+        connection,
+        message,
+        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        &error);
+    if (error != NULL) {
+        g_warning ("unable to send message: %s", error->message);
+        g_clear_error (&error);
+    }
 
-	type = DBUS_BUS_SESSION;
+    g_dbus_connection_flush_sync (connection, NULL, &error);
+    if (error != NULL) {
+        g_warning ("unable to flush message queue: %s", error->message);
+        g_clear_error (&error);
+    }
+ 
+    body = g_dbus_message_get_body (reply);
+    g_variant_get (body, "(u)", &value);
+ 
+    g_object_unref (reply);
+    g_object_unref (connection);
+    g_object_unref (message);
 
-	int reply_timeout;
-	reply_timeout = 2000;
-
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
-
-	if (connection == NULL) {
-		fprintf (stderr, "Failed to open connection to message bus: %s\n", error.message);
-		dbus_error_free (&error);
-		return (-1);
-	}
-
-	char *last_dot;
-	last_dot = strrchr (name, '.');
-	*last_dot = '\0';
-
-	message = dbus_message_new_method_call (NULL,path,name,last_dot + 1);
-	dbus_message_set_auto_start (message, TRUE);
-
-	if (message == NULL)
-	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
-		return (-1);
-	}
-
-	if (dest && !dbus_message_set_destination (message, dest))
-	{
-		fprintf (stderr, "Not enough memory\n");
-		return (-1);
-	}
-
-
-	dbus_message_iter_init_append (message, &iter);
-
-	dbus_uint32_t uint32;
-	uint32 = backlight;
-	dbus_message_iter_append_basic (&iter, DBUS_TYPE_UINT32, &uint32);
-
-	dbus_error_init (&error);
-	reply = dbus_connection_send_with_reply_and_block (connection, message, reply_timeout, &error);
-	if (dbus_error_is_set (&error)) {
-		fprintf (stderr, "Error %s: %s\n",error.name,error.message);
-		return (-1);
-	}
-
-	if (reply)
-	{
-		dbus_message_iter_init (reply, &iter);
-		dbus_bool_t val;
-		dbus_message_iter_get_basic (&iter, &val);
-		retval = val;
-		dbus_message_unref (reply);
-	}
-
-	dbus_message_unref (message);
-	dbus_connection_unref (connection);
-
-	return retval;
+	return value;
 }
 
-int dbus_set_screen_backlight_value_kde(int backlight) {
+int dbus_set_screen_backlight_value_kde (int backlight) {
 
-	DBusConnection *connection;
-	DBusError error;
-	DBusMessage *message;
-	DBusMessageIter iter;
-	DBusBusType type;
-	DBusMessage *reply;
+    GDBusMessage    *message, *reply;
+    GDBusConnection *connection;
+    GError          *error;
+    GVariant        *body; 
+    gint32           value;
+    
+    connection = get_dbus_message_bus (G_BUS_TYPE_SESSION);
 
-	int retval=0;
-	const char *name = NULL;
-        char arg[]="org.kde.Solid.PowerManagement.setBrightness";
-        name=arg;
-        const char *dest = "org.kde.Solid.PowerManagement";
-        const char *path = "/org/kde/Solid/PowerManagement"; 
+    message = g_dbus_message_new_method_call (
+        KDE_DBUS_SERVICE,
+        KDE_DBUS_PATH,
+        KDE_DBUS_INTERFACE,
+        "SetBrightness");        
+    
+    if (message == NULL) {
+        g_warning ("Failed to allocate the dbus message");
+        return -1;
+    }
 
-	type = DBUS_BUS_SESSION;
+    g_dbus_message_set_body (
+        message, 
+        g_variant_new ("(u)", backlight));  
+          
+    error = NULL;
+    
+    reply = g_dbus_connection_send_message_with_reply_sync (
+        connection,
+        message,
+        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+        -1,
+        NULL,
+        NULL,
+        &error);
+    if (error != NULL) {
+        g_warning ("unable to send message: %s", error->message);
+        g_clear_error (&error);
+    }
 
-	int reply_timeout;
-	reply_timeout = 2000;
+    g_dbus_connection_flush_sync (connection, NULL, &error);
+    if (error != NULL) {
+        g_warning ("unable to flush message queue: %s", error->message);
+        g_clear_error (&error);
+    }
+ 
+    body = g_dbus_message_get_body (reply);
+    g_variant_get (body, "(u)", &value);
+ 
+    g_object_unref (reply);
+    g_object_unref (connection);
+    g_object_unref (message);
 
-	dbus_error_init (&error);
-	connection = dbus_bus_get (type, &error);
+	return value;
 
-	if (connection == NULL) {
-		fprintf (stderr, "Failed to open connection to message bus: %s\n", error.message);
-		dbus_error_free (&error);
-		return (-1);
-	}
-
-	char *last_dot;
-	last_dot = strrchr (name, '.');
-	*last_dot = '\0';
-
-	message = dbus_message_new_method_call (NULL,path,name,last_dot + 1);
-	dbus_message_set_auto_start (message, TRUE);
-
-	if (message == NULL)
-	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
-		return (-1);
-	}
-
-	if (dest && !dbus_message_set_destination (message, dest))
-	{
-		fprintf (stderr, "Not enough memory\n");
-		return (-1);
-	}
-
-
-	dbus_message_iter_init_append (message, &iter);
-
-	dbus_int32_t int32;
-	int32 = backlight;
-	dbus_message_iter_append_basic (&iter, DBUS_TYPE_INT32, &int32);
-
-	dbus_error_init (&error);
-	reply = dbus_connection_send_with_reply_and_block (connection, message, reply_timeout, &error);
-	if (dbus_error_is_set (&error)) {
-		fprintf (stderr, "Error %s: %s\n",error.name,error.message);
-		return (-1);
-	}
-
-	if (reply)
-	{
-		dbus_message_iter_init (reply, &iter);
-		//dbus_bool_t val;
-		//dbus_message_iter_get_basic (&iter, &val);
-		//retval = val;
-		dbus_message_unref (reply);
-	}
-
-	dbus_message_unref (message);
-	dbus_connection_unref (connection);
-
-	return retval;
 }
 
-int dbus_set_screen_backlight_value(int backlight, int backend) {
+
+int dbus_set_screen_backlight_value (int backlight, int backend) {
 
 	int ret=-1;
 
@@ -387,4 +345,5 @@ int dbus_set_screen_backlight_value(int backlight, int backend) {
 	if (backend == 2) ret = set_screen_xbacklight_value(backlight);
 
 	return ret;
+	
 }
