@@ -1,5 +1,5 @@
 #include <X11/Xlib.h>
-#include <dbus/dbus-glib-lowlevel.h>
+#include <gio/gio.h>
 
 #define CONFIG_PATH ".config/lightum/"
 #define CONFIG_FILE "lightum.conf"
@@ -53,6 +53,7 @@ int remove_pid_file();
 int create_pid_file();
 
 /* dbus.c */
+GDBusConnection* get_dbus_message_bus(GBusType *bus_type);
 int get_screensaver_active();
 int set_keyboard_brightness_value(int brightness);
 int dbus_get_screen_backlight_value();
@@ -61,10 +62,10 @@ int dbus_set_screen_backlight_value_kde(int backlight);
 int dbus_set_screen_backlight_value(int backlight, int backend);
 
 /* dbus-session.c */
-DBusGConnection* get_dbus_connection();
-DBusGProxy* get_dbus_proxy_manager(DBusGConnection *connection);
-DBusGProxy* get_dbus_proxy_session(DBusGConnection *connection, DBusGProxy *proxy_manager);
-int get_session_active (DBusGProxy *proxy_session);
+GDBusConnection* get_dbus_connection();
+GDBusProxy* get_dbus_proxy_manager(GDBusConnection *connection);
+GDBusProxy* get_dbus_proxy_session(GDBusConnection *connection, GDBusProxy *proxy_manager);
+int get_session_active (GDBusProxy *proxy_session);
 
 extern int get_screen_xbacklight_value();
 extern int set_screen_xbacklight_value(int backlight);
