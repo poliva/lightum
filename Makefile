@@ -2,10 +2,16 @@ DESTDIR?=/
 SHELL = /bin/sh
 CC?=gcc
 CDEBUGFLAGS= -g -O2
-CFLAGS = `pkg-config --cflags dbus-1 --cflags glib-2.0 --cflags gio-2.0 --cflags libsystemd-login` -Wall -Wextra -Wwrite-strings $(CDEBUGFLAGS)
-LDFLAGS= `pkg-config --libs dbus-1 --libs glib-2.0 --libs gio-2.0 --libs libsystemd-login` $(CDEBUGFLAGS) -lX11 -lXext -lXss -lm
+CFLAGS = `pkg-config --cflags dbus-1 --cflags glib-2.0 --cflags gio-2.0` -Wall -Wextra -Wwrite-strings $(CDEBUGFLAGS)
+LDFLAGS= `pkg-config --libs dbus-1 --libs glib-2.0 --libs gio-2.0` $(CDEBUGFLAGS) -lX11 -lXext -lXss -lm
 INSTALL = /usr/bin/install -c
 INSTALLDATA = /usr/bin/install -c -m 644
+
+SYSTEMD_FOUND := $(shell pkg-config --exists libsystemd-login; echo $$?)
+ifeq ($(SYSTEMD_FOUND),0)
+	CFLAGS += `pkg-config --cflags libsystemd-login` -DHAVE_SYSTEMD
+	LDFLAGS += `pkg-config --libs libsystemd-login`
+endif
 
 srcdir = .
 prefix = $(DESTDIR)

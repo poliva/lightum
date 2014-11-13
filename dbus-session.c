@@ -12,6 +12,8 @@
  *
  */
 
+#ifdef HAVE_SYSTEMD
+
 #include <stdlib.h>
 #include <gio/gio.h>
 #include <systemd/sd-login.h>
@@ -144,3 +146,5 @@ GDBusConnection* get_dbus_connection()
 
 	return connection;
 }
+
+#endif
