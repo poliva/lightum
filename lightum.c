@@ -46,7 +46,9 @@ void usage(const char *error) {
 	fprintf(stderr, "     -x        : manual mode (will honor the brightness value set with Fn keys)\n");
 	fprintf(stderr, "     -l        : fully dim the screen backlight when session is idle\n");
 	fprintf(stderr, "     -u        : do not ignore brightness changes happening outside lightum\n");
+#ifdef HAVE_SYSTEMD
 	fprintf(stderr, "     -U        : ignore session information from systemd\n");
+#endif
 	fprintf(stderr, "     -s        : power off keyboard light when screen saver is active\n");
 	fprintf(stderr, "     -f        : run in foreground (do not daemonize)\n");
 	fprintf(stderr, "     -v        : verbose mode, useful for debugging with -f and -d\n");
@@ -80,9 +82,11 @@ int main(int argc, char *argv[]) {
 	pid_t pid;
 	conf_data conf;
 	Display *display = NULL;
+#ifdef HAVE_SYSTEMD
     GDBusConnection *connection;
     GDBusProxy *proxy_manager;
     GDBusProxy *proxy_session;
+#endif
 	uid_t uid, euid;
 	int light_aux=-1, light_avg=-1;
 	int lightvalues[15] = {0};
@@ -112,9 +116,11 @@ int main(int argc, char *argv[]) {
 			case 'u':
 				conf.ignoreuser=0;
 				break;
+#ifdef HAVE_SYSTEMD
 			case 'U':
 				conf.ignoresession=1;
 				break;
+#endif
 			case 'l':
 				conf.fulldim=1;
 				break;
@@ -162,7 +168,9 @@ int main(int argc, char *argv[]) {
 
 	if (verbose) printf("CONFIG:\n\tmanualmode: %d\n",conf.manualmode);
 	if (verbose) printf("\tignoreuser: %d\n",conf.ignoreuser);
+#ifdef HAVE_SYSTEMD
 	if (verbose) printf("\tignoresession: %d\n",conf.ignoresession);
+#endif
 	if (verbose) printf("\tworkmode: %d\n",conf.workmode);
 	if (verbose) printf("\tqueryscreensaver: %d\n",conf.queryscreensaver);
 	if (verbose) printf("\tmaxbrightness: %d\n",conf.maxbrightness);
@@ -246,6 +254,7 @@ int main(int argc, char *argv[]) {
 
 	signal_installer();
 
+#ifdef HAVE_SYSTEMD
 	connection = 0;
 	proxy_manager = 0;
 	proxy_session = 0;
@@ -254,6 +263,7 @@ int main(int argc, char *argv[]) {
 		proxy_manager = get_dbus_proxy_manager(connection);
 		proxy_session = get_dbus_proxy_session(connection, proxy_manager);
 	}
+#endif
 
 	// initialize the light values array
 	if (!conf.manualmode) {
@@ -275,6 +285,7 @@ int main(int argc, char *argv[]) {
 			reloadconfig=0;
 		}
 
+#ifdef HAVE_SYSTEMD
 		if (!conf.ignoresession) {
 			if (! get_session_active(proxy_session) ) {
 				if (verbose) printf("lightum: user session not active, sleeping %d milliseconds.\nIf you believe this is an error, try running lightum with 'ignoresession=1' or '-U' command line switch.\n", conf.polltime);
@@ -282,6 +293,7 @@ int main(int argc, char *argv[]) {
 				continue;
 			}
 		}
+#endif
 
 		if (!conf.manualmode) {
 			light=get_light_sensor_value();
