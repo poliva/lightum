@@ -19,6 +19,11 @@
 #define GS_DBUS_PATH        "/org/gnome/ScreenSaver"
 #define GS_DBUS_INTERFACE   "org.gnome.ScreenSaver"
 
+/* Cinnamon Screensaver */
+#define CS_DBUS_SERVICE     "org.cinnamon.ScreenSaver"
+#define CS_DBUS_PATH        "/org/cinnamon/ScreenSaver"
+#define CS_DBUS_INTERFACE   "org.cinnamon.ScreenSaver"
+
 /* UPower */
 #define UP_DBUS_SERVICE     "org.freedesktop.UPower"
 #define UP_DBUS_PATH        "/org/freedesktop/UPower/KbdBacklight"
@@ -28,6 +33,11 @@
 #define SD_DBUS_SERVICE     "org.gnome.SettingsDaemon"
 #define SD_DBUS_PATH        "/org/gnome/SettingsDaemon/Power"
 #define SD_DBUS_INTERFACE   "org.gnome.SettingsDaemon.Power.Screen"
+
+/* Cinnamon SettingsDaemon */
+#define CSD_DBUS_SERVICE    "org.cinnamon.SettingsDaemon"
+#define CSD_DBUS_PATH       "/org/cinnamon/SettingsDaemon/Power"
+#define CSD_DBUS_INTERFACE  "org.cinnamon.SettingsDaemon.Power.Screen"
 
 /* KDE PowerManagement */
 #define KDE_DBUS_SERVICE    "org.kde.Solid.PowerManagement"
@@ -61,14 +71,26 @@ int get_screensaver_active() {
     GError          *error;
     GVariant        *body; 
     gint32           value;
+    const char      *desktop;
     
     connection = get_dbus_message_bus (G_BUS_TYPE_SESSION);
 
-    message = g_dbus_message_new_method_call (
-        GS_DBUS_SERVICE,
-        GS_DBUS_PATH,
-        GS_DBUS_INTERFACE,
-        "GetActive");        
+    desktop = getenv("DESKTOP_SESSION");
+
+    /* Different service for cinnamon */
+    if (desktop != NULL && !strcasecmp(desktop, "cinnamon")) {
+        message = g_dbus_message_new_method_call (
+            CS_DBUS_SERVICE,
+            CS_DBUS_PATH,
+            CS_DBUS_INTERFACE,
+            "GetActive");
+    } else {
+        message = g_dbus_message_new_method_call (
+            GS_DBUS_SERVICE,
+            GS_DBUS_PATH,
+            GS_DBUS_INTERFACE,
+            "GetActive");
+    }
     
     if (message == NULL) {
         g_warning ("Failed to allocate the dbus message");
@@ -171,14 +193,26 @@ int dbus_get_screen_backlight_value() {
     GError          *error;
     GVariant        *body; 
     gint32           value;
+    const char      *desktop;
     
     connection = get_dbus_message_bus(G_BUS_TYPE_SESSION);
 
-    message = g_dbus_message_new_method_call (
-        SD_DBUS_SERVICE,
-        SD_DBUS_PATH,
-        SD_DBUS_INTERFACE,
-        "GetPercentage");        
+    desktop = getenv("DESKTOP_SESSION");
+
+    /* Different service for cinnamon */
+    if (desktop != NULL && !strcasecmp(desktop, "cinnamon")) {
+        message = g_dbus_message_new_method_call (
+            CSD_DBUS_SERVICE,
+            CSD_DBUS_PATH,
+            CSD_DBUS_INTERFACE,
+            "GetPercentage");
+    } else {
+        message = g_dbus_message_new_method_call (
+            SD_DBUS_SERVICE,
+            SD_DBUS_PATH,
+            SD_DBUS_INTERFACE,
+            "GetPercentage");
+    }
     
     if (message == NULL) {
         g_warning ("Failed to allocate the dbus message");
@@ -229,14 +263,25 @@ int dbus_set_screen_backlight_value_gnome (int backlight) {
     GError          *error;
     GVariant        *body; 
     gint32           value;
+    const char      *desktop;
     
     connection = get_dbus_message_bus (G_BUS_TYPE_SESSION);
  
-    message = g_dbus_message_new_method_call (
-        SD_DBUS_SERVICE,
-        SD_DBUS_PATH,
-        SD_DBUS_INTERFACE,
-        "SetPercentage");        
+    desktop = getenv("DESKTOP_SESSION");
+
+    if (desktop != NULL && !strcasecmp(desktop, "cinnamon")) {
+        message = g_dbus_message_new_method_call (
+            CSD_DBUS_SERVICE,
+            CSD_DBUS_PATH,
+            CSD_DBUS_INTERFACE,
+            "SetPercentage");
+    } else {
+        message = g_dbus_message_new_method_call (
+            SD_DBUS_SERVICE,
+            SD_DBUS_PATH,
+            SD_DBUS_INTERFACE,
+            "SetPercentage");
+    }
     
     if (message == NULL) {
         g_warning ("Failed to allocate the dbus message");
