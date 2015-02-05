@@ -102,6 +102,13 @@ int get_screensaver_active() {
     }
    
     body = g_dbus_message_get_body (reply);
+
+    if (!g_variant_check_format_string(body, "(&s)", FALSE))
+    {
+        g_warning ("variant return type is unexpected");
+        return -1;
+    }
+
     g_variant_get (body, "(&s)", &value);
     
     g_object_unref (connection);
@@ -212,6 +219,13 @@ int dbus_get_screen_backlight_value() {
     }
    
     body = g_dbus_message_get_body (reply);
+
+    if (!g_variant_check_format_string(body, "(u)", FALSE))
+    {
+        g_warning ("variant return type is unexpected");
+        return -1;
+    }
+
     g_variant_get (body, "(u)", &value);
  
     g_object_unref (connection);
@@ -269,6 +283,13 @@ int dbus_set_screen_backlight_value_gnome (int backlight) {
     }
  
     body = g_dbus_message_get_body (reply);
+
+    if (!g_variant_check_format_string(body, "(u)", FALSE))
+    {
+        g_warning ("variant return type is unexpected");
+        return -1;
+    }
+
     g_variant_get (body, "(u)", &value);
  
     g_object_unref (reply);
@@ -325,6 +346,13 @@ int dbus_set_screen_backlight_value_kde (int backlight) {
     }
  
     body = g_dbus_message_get_body (reply);
+
+    if (!g_variant_check_format_string(body, "(u)", FALSE))
+    {
+        g_warning ("variant return type is unexpected");
+        return -1;
+    }
+
     g_variant_get (body, "(u)", &value);
  
     g_object_unref (reply);
