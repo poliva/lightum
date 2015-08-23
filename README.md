@@ -59,7 +59,11 @@ Official Ubuntu packages are available in [poliva/lightum-mba ppa](https://launc
      sudo add-apt-repository ppa:poliva/lightum-mba
      sudo apt-get update
      sudo apt-get install lightum
-     
+
+ArchLinux packages
+------------------
+Lightum is available for Archlinux via the [AUR](https://aur.archlinux.org/packages/lightum-git/).
+
 Compiling from source
 ---------------------
 (Tested on Ubuntu 13.04)
