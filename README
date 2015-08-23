@@ -7,8 +7,8 @@ MacBook based laptops.
 By default it will run in "auto" mode, this means it will read data from the
 ambient light sensor (located on the iSight camera) and automatically:
 
-	a) light up or dim the keyboard brightness 
-	b) light up or dim the the video backlight 
+	a) light up or dim the keyboard brightness
+	b) light up or dim the the video backlight
 
 It will also dim the keyboard brightness and screen backlight when the computer
 is not used for a configurable amount of seconds (5 by default).
@@ -47,6 +47,8 @@ Official Ubuntu packages are available in poliva/lightum-mba ppa:
      sudo add-apt-repository ppa:poliva/lightum-mba
      sudo apt-get update
      sudo apt-get install lightum
+
+An ArchLinux package is available via the AUR: https://aur.archlinux.org/packages/lightum-git/ 
 
 Compiling from source (Tested on Ubuntu 13.04)
 
